@@ -208,164 +208,254 @@ Use a contextual AI explanation panel inside each feature. Lead with evidence an
 
 ## 11. Product backlog
 
-Priority key: **P0** required for the demo; **P1** improves the demo; **P2** future work.
+Priority key: **P0** required for the end-to-end demo; **P1** improves the demo if time allows; **P2** future validation or production work. Each backlog item is written as an implementation task with a visible result.
 
-### Epic A — Foundation and demo data
+### Epic A — Project setup and shared data
 
-- **A1 (P0):** Create frontend and backend projects with local setup instructions.
-- **A2 (P0):** Define shared schemas for policies, medications, departments, configurations, inventory, alternatives, events, and findings.
-- **A3 (P0):** Create fictional data with two departments, three medications, one approved alternative link, one configuration mismatch, and several Shadow Mode events.
-- **A4 (P0):** Add an in-app “Load demo data” action.
-- **A5 (P1):** Support CSV import for selected mock tables.
+- **A1 (P0):** Create the frontend and backend folders, install dependencies, and add one command or documented pair of commands to start both services.
+- **A2 (P0):** Add `.gitignore` entries for `.env`, local databases, caches, and generated build files.
+- **A3 (P0):** Add `.env.example` with `OPENAI_API_KEY=` and `OPENAI_MODEL=gpt-5.5` placeholders only; never put a real credential in this file.
+- **A4 (P0):** Define shared schemas for `ShortagePolicy`, `PolicyRule`, `Medication`, `Department`, `SystemConfig`, `Inventory`, `AlternativeLink`, `TestCase`, `ShadowEvent`, and `Finding`.
+- **A5 (P0):** Create fictional seed data with two departments, three fictional medications, one approved alternative link, one configuration mismatch, and at least six mock events.
+- **A6 (P0):** Add a backend seed/reset action and a frontend “Load demo data” button so the demo starts from the same state every time.
+- **A7 (P1):** Add CSV/JSON upload for selected mock tables and show row-level validation errors.
+- **A8 (P0):** Add a backend health endpoint and configure local frontend-to-backend requests.
 
-### Epic B — Policy intake
+### Epic B — API key and model connection
 
-- **B1 (P0):** Add policy text input or sample upload.
-- **B2 (P0):** Use the model to draft structured rules with source excerpts.
-- **B3 (P0):** Validate the draft against a schema and show missing or unclear fields.
-- **B4 (P0):** Require user confirmation before other features can use a policy.
-- **B5 (P1):** Allow editing and versioning in the demo.
+- **B1 (P0):** Document where the backend owner puts their own API key in a local, untracked `backend/.env` file.
+- **B2 (P0):** Load `OPENAI_API_KEY` and `OPENAI_MODEL` through backend settings; stop startup with a clear message if the key is missing when live AI mode is enabled.
+- **B3 (P0):** Add a backend-only `POST /api/ai/check` or startup check that makes one harmless Responses API request and returns only a success/failure status to the UI.
+- **B4 (P0):** Verify that the browser never receives the API key: no frontend environment variable, HTML, JavaScript bundle, or API response may contain it.
+- **B5 (P0):** Handle invalid key, rate limit, timeout, network failure, and API error with a readable message; never log the secret or full authorization headers.
+- **B6 (P0):** Add a mock-AI mode so the full demo remains usable without network access or a working API credential.
+- **B7 (P1):** Add a model-call log containing request purpose, duration, and status only; do not log policy text or credentials.
+- **B8 (P0):** Define strict function-tool schemas for reading confirmed policies, configurations, inventory, test cases, and Shadow Mode events.
+- **B9 (P0):** Implement a backend tool dispatcher that allowlists those functions, validates arguments, calls application services, and returns tool results to the model. Reject unknown tools and any tool that would modify live systems.
 
-### Epic C — Rollout checker
+### Epic C — Policy intake and confirmation
 
-- **C1 (P0):** Display mock system records linked to a selected policy.
-- **C2 (P0):** Compare confirmed rules with records using deterministic checks.
-- **C3 (P0):** Display mismatches with evidence and review status.
-- **C4 (P1):** Let a reviewer mark a finding expected, dismissed, or needing follow-up.
-- **C5 (P1):** Export a rollout checklist.
+- **C1 (P0):** Build a screen to paste the fictional approved policy text and submit it to the backend.
+- **C2 (P0):** Add a Responses API call that drafts structured policy rules using a defined schema.
+- **C3 (P0):** Store the exact source excerpt associated with every candidate rule.
+- **C4 (P0):** Validate required fields and display missing or ambiguous information as questions.
+- **C5 (P0):** Allow the pharmacist persona to edit, confirm, or reject each candidate rule.
+- **C6 (P0):** Prevent unconfirmed rules from being used by the simulator, Ripple Map, or Shadow Mode.
+- **C7 (P1):** Allow the user to reopen a confirmed rule for revision and keep a simple version history.
 
-### Epic D — Flight Simulator
+### Epic D — Rollout checker
 
-- **D1 (P0):** Generate or load sample order scenarios from confirmed rules.
-- **D2 (P0):** Run scenarios through deterministic policy checks.
-- **D3 (P0):** Show expected behavior versus observed configuration behavior.
-- **D4 (P0):** Show “simulation only” labels and assumptions.
-- **D5 (P1):** Allow reruns after policy or mock-configuration edits.
+- **D1 (P0):** Display mock system configuration records by system type, medication, and department.
+- **D2 (P0):** Implement deterministic checks that compare confirmed rules with mock configuration records.
+- **D3 (P0):** Create a finding for each mismatch with rule ID, source record ID, reason, and review status.
+- **D4 (P0):** Build a Rollout Review page with filters for department, system, and finding status.
+- **D5 (P0):** Add controls to mark a finding “Needs review,” “Expected,” or “Dismissed,” with an optional note.
+- **D6 (P1):** Export the reviewed rollout checklist to CSV or a printable page.
 
-### Epic E — Ripple Map
+### Epic E — Shortage Flight Simulator
 
-- **E1 (P0):** Represent approved alternative relationships as directed links.
-- **E2 (P0):** Calculate projected use and days-of-supply changes from mock inputs.
-- **E3 (P0):** Display a graph view of potential shifts.
-- **E4 (P0):** Show input quantities, formula, assumptions, and missing values.
-- **E5 (P1):** Compare two user-selected scenarios side by side.
+- **E1 (P0):** Draft at least three test cases from confirmed rules or load the supplied sample cases.
+- **E2 (P0):** Validate every generated test case against the `TestCase` schema before it can run.
+- **E3 (P0):** Implement a deterministic evaluator that compares expected policy behavior with the mock system configuration.
+- **E4 (P0):** Show each case as Pass, Possible mismatch, or Needs clarification, with the rule and record behind the result.
+- **E5 (P0):** Label every run “Simulation only — based on supplied sample data.”
+- **E6 (P1):** Let a user change a mock configuration and rerun the same cases to see whether the finding changes.
 
-### Epic F — Shadow Mode
+### Epic F — Shortage Ripple Map
 
-- **F1 (P0):** Load a fictional, read-only event stream.
-- **F2 (P0):** Compare events with confirmed policy rules using deterministic conditions.
-- **F3 (P0):** Group repeated exceptions or deviations into findings.
-- **F4 (P0):** Show event count, time window, relevant records, and reason flagged.
-- **F5 (P0):** Keep findings review-only; implement no order blocking or system writes.
-- **F6 (P1):** Allow a reviewer to mark findings expected, dismissed, or for policy review.
+- **F1 (P0):** Store approved alternative relationships as directed links; reject links not marked as approved in the demo data.
+- **F2 (P0):** Implement a transparent projection using supplied quantity, use-rate, and scenario-shift values.
+- **F3 (P0):** Add input validation for missing, negative, or inconsistent inventory values.
+- **F4 (P0):** Display medication/location nodes and the direction of potential use shifts.
+- **F5 (P0):** Show each projection’s formula, inputs, assumptions, and warning that it is not a clinical recommendation.
+- **F6 (P1):** Compare two user-selected scenarios side by side.
 
-### Epic G — Agent and evidence
+### Epic G — Shadow Mode
 
-- **G1 (P0):** Connect the backend to the Responses API using a server-side API key.
-- **G2 (P0):** Define a small set of read-only function tools.
-- **G3 (P0):** Use Structured Outputs for policy drafts, test-case drafts, and explanations.
-- **G4 (P0):** Attach source excerpts or record IDs to every model explanation.
-- **G5 (P0):** Prevent the agent from inventing alternatives or making clinical recommendations.
-- **G6 (P1):** Add local mock mode if API access or network connectivity fails.
+- **G1 (P0):** Load the fictional event stream without connecting to or changing a live system.
+- **G2 (P0):** Compare each event with confirmed rules using deterministic conditions.
+- **G3 (P0):** Group repeated deviations by policy, department, event type, and time window.
+- **G4 (P0):** Create a finding that shows event count, representative source IDs, time window, and why the pattern was flagged.
+- **G5 (P0):** Build a Shadow Mode page that clearly labels all results read-only and review-only.
+- **G6 (P0):** Add review controls for “Expected,” “Dismissed,” and “Review policy,” with a note field.
+- **G7 (P1):** Let an accepted Shadow Mode finding become a new Flight Simulator case after user confirmation.
 
-### Epic H — Interface and demo readiness
+### Epic H — Shared interface and evidence
 
-- **H1 (P0):** Build navigation across all six main pages.
-- **H2 (P0):** Build finding detail view with evidence, assumptions, and review controls.
-- **H3 (P0):** Add loading, error, empty, and “demo data” states.
-- **H4 (P0):** Prepare a short end-to-end demo narrative.
-- **H5 (P1):** Add keyboard navigation, readable contrast, and labels for status icons.
+- **H1 (P0):** Add navigation for Overview, Policy Setup, Rollout Review, Flight Simulator, Ripple Map, and Shadow Mode.
+- **H2 (P0):** Build a reusable finding card with severity/status, short explanation, and evidence link.
+- **H3 (P0):** Build a detail panel that shows the policy excerpt, source record, assumptions, calculation inputs, and review history.
+- **H4 (P0):** Add loading, empty, validation-error, API-error, and mock-data states to each main page.
+- **H5 (P0):** Add visible “Demo data” labels and a reset control.
+- **H6 (P1):** Add keyboard navigation, readable contrast, and text labels for status icons.
 
-### Epic I — Future validation and deployment
+### Epic I — Integration, validation, and presentation
 
-- **I1 (P2):** Review the workflow with hospital pharmacists and pharmacy-informatics staff.
-- **I2 (P2):** Ask incumbent vendors whether they already provide policy-specific simulations and post-rollout verification.
-- **I3 (P2):** Explore secure, read-only system integrations with a health-system partner.
-- **I4 (P2):** Review privacy, security, governance, and deployment requirements with a health-system partner.
-- **I5 (P2):** Evaluate false positives, missed issues, review time, and staff trust using approved evaluation data.
+- **I1 (P0):** Connect the four feature pages to the same confirmed policy and shared demo dataset.
+- **I2 (P0):** Add a complete demo script that can be completed in under five minutes.
+- **I3 (P0):** Walk through the demo from a clean reset and verify every button used in the script has a visible result.
+- **I4 (P0):** Confirm no real patient data is present and no production write action exists.
+- **I5 (P0):** Rehearse with live API mode and mock mode; keep the mock mode available as a fallback.
+- **I6 (P1):** Ask a pharmacist or pharmacy-informatics contact to review the wording and product boundary if one is available.
+
+### Epic J — Future work
+
+- **J1 (P2):** Validate whether incumbent products already provide shortage-specific policy simulation and post-rollout verification.
+- **J2 (P2):** Review the workflow with hospital pharmacists and pharmacy-informatics staff.
+- **J3 (P2):** Explore secure, read-only integrations with a health-system partner.
+- **J4 (P2):** Review privacy, security, governance, and deployment requirements with a health-system partner.
+- **J5 (P2):** Evaluate false positives, missed issues, review time, and staff trust using approved evaluation data.
 
 ## 12. Hackathon sprint plan
 
-**Assumption:** roughly 24 hours of build time. These are short build cycles; adjust the time boxes to the event. Each sprint ends with a working increment.
+**Planning assumption:** about 24 hours of build time. The six sprints below are short, sequential build cycles totaling about 22 hours, leaving roughly two hours for breaks, integration surprises, and final presentation. If the event is shorter, complete all P0 work and drop P1 work first.
 
-### Sprint 1 — Foundation and shared data (about 3 hours)
+### Sprint 1 — Project foundation and data contract (about 3 hours)
 
-**Goal:** Everyone can run the app and load one consistent fictional scenario.
+**Goal:** The app runs locally, the backend and frontend agree on data shapes, and the team can load a repeatable fictional scenario.
 
-**Backlog:** A1–A4; start H1.
-
-**Instructions:**
-
-1. Create the repository structure and setup instructions.
-2. Agree on shared schemas before splitting work.
-3. Seed fictional data, including one intentional mismatch and several mock events.
-4. Add “Load demo data” and a basic dashboard shell.
-5. Do not use real medication or patient details in the demo.
-
-**Done when:** A builder can start the app and see the demo scenario.
-
-### Sprint 2 — Policy intake and rollout review (about 4 hours)
-
-**Goal:** A user can provide an approved sample policy and inspect a reviewable draft plus system mismatches.
-
-**Backlog:** B1–B4, C1–C3, G1, G3, G5.
+**Sprint backlog:** A1–A6, A8; start H1.
 
 **Instructions:**
 
-1. Build the policy input screen.
-2. Add one model call that extracts candidate rules into a schema.
-3. Display source text beside each extracted rule.
-4. Require confirmation before other features use the policy.
-5. Compare confirmed rules with mock records using application code.
-6. Make every mismatch explainable and reviewable.
+1. Create the frontend and backend directories and install only the dependencies needed for the demo.
+2. Add `.gitignore` rules for `.env`, local SQLite files, caches, and build output.
+3. Add `.env.example` with placeholder variable names only. Do not put a real API key in it.
+4. Agree on the shared data schemas before dividing feature work. Put the schema definitions in the backend and mirror the fields in frontend types.
+5. Seed fictional data that includes one known stale configuration record, one approved alternative, and enough events to produce a Shadow Mode pattern.
+6. Add a reset/load-demo-data control. Start both services and confirm the Overview page displays the seeded data.
 
-**Done when:** The demo policy produces one confirmed rule and at least one evidence-backed mismatch.
+**Acceptance criteria:**
 
-### Sprint 3 — Flight Simulator and Ripple Map (about 5 hours)
+- A teammate can follow the README and start both services.
+- “Load demo data” restores the same dataset every time.
+- The dataset contains no real patient information.
+- `.env` is ignored by Git and `.env.example` contains no credential.
 
-**Goal:** A user can preflight a policy and see how an approved alternative could shift supply pressure.
+### Sprint 2 — API key setup and policy intake (about 4 hours)
 
-**Backlog:** D1–D4, E1–E4, G2.
+**Goal:** The backend can make a safe, server-side model request, and a user can turn sample policy text into a confirmed structured draft.
 
-**Instructions:**
-
-1. Create sample order scenarios. The model may draft cases; validate all fields before use.
-2. Run cases through deterministic policy checks.
-3. Show expected behavior, observed behavior, and any mismatch.
-4. Build the Ripple Map from mock alternative links and inventory values.
-5. Put the formula and assumptions next to projected values.
-6. Do not ask the model to calculate inventory totals or select a medication.
-
-**Done when:** A user can run at least three sample cases and see a ripple projection with its inputs.
-
-### Sprint 4 — Shadow Mode and demo (about 4 hours)
-
-**Goal:** A user can see how read-only event monitoring identifies a repeated unexpected pattern.
-
-**Backlog:** F1–F5, H2–H4, G4, G6.
+**Sprint backlog:** B1–B6, B8–B9, C1–C6.
 
 **Instructions:**
 
-1. Load the fictional event stream when the user opens Shadow Mode.
-2. Compare events with confirmed policy conditions using application code.
-3. Group repeated deviations and show representative event records.
-4. Label Shadow Mode read-only; do not imply that it changes orders or configurations.
-5. Use the model to explain a finding only after deterministic checks produce it.
-6. Rehearse: policy intake → rollout mismatch → simulation → ripple map → Shadow Mode finding.
-7. Keep a mock response available if API access fails during the presentation.
+1. The designated backend owner creates or uses an authorized OpenAI API credential. Do not paste the secret into chat, source code, a shared plan, or a frontend setting.
+2. Put the credential in the backend’s local, untracked `.env` as `OPENAI_API_KEY=...`; set `OPENAI_MODEL=gpt-5.5` there as well. Keep `.env.example` as placeholders only.
+3. Add backend settings that load the key and model name. If live mode is selected and the key is missing, show a clear setup error instead of silently failing.
+4. From the backend only, send a harmless first request to the Responses API. Return only success/failure status to the browser. Check the code and browser network response to ensure the secret is never returned or logged.
+5. Add error handling for missing key, invalid key, rate limit, timeout, and network failure. Confirm mock mode still works without a key.
+6. Build the policy input screen. Ask the model to return candidate rules in the defined schema, including source excerpts.
+7. Validate the response on the backend. Show unclear fields as questions and require a human confirmation click before saving confirmed rules.
 
-**Done when:** The full demo works with fictional data and requires no live hospital connection.
+**Acceptance criteria:**
+
+- A valid local key produces a successful backend model check.
+- An invalid or missing key produces a readable error without exposing the key.
+- The key is not present in frontend files, browser storage, network responses, or Git changes.
+- Candidate policy rules cannot be used by other features until confirmed.
+- Mock mode can complete policy intake if the API is unavailable.
+
+### Sprint 3 — Rollout checker and evidence review (about 4 hours)
+
+**Goal:** A confirmed policy can be compared with mock system records and reviewed finding by finding.
+
+**Sprint backlog:** D1–D5, H2–H5, I1.
+
+**Instructions:**
+
+1. Display configuration records grouped by system type, medication, and department.
+2. Implement simple, deterministic comparisons between confirmed policy rules and mock configurations. Do not use the model to decide whether a record matches.
+3. For each mismatch, create a finding with the rule ID, source record ID, reason, and review status.
+4. Add filters for department, system type, and status.
+5. Add “Needs review,” “Expected,” and “Dismissed” actions. Save the reviewer’s selection and optional note in the demo activity history.
+6. Add evidence details: policy excerpt, configuration record, and plain-language explanation.
+
+**Acceptance criteria:**
+
+- The seeded stale record produces the expected finding.
+- A reviewer can open the evidence and mark the finding.
+- Changing unrelated records does not create unrelated findings.
+- Findings are clearly labeled as possible mismatches for review.
+
+### Sprint 4 — Flight Simulator and Ripple Map (about 5 hours)
+
+**Goal:** A user can test sample orders against the confirmed policy and see a transparent supply ripple projection.
+
+**Sprint backlog:** E1–E5, F1–F5, I1.
+
+**Instructions:**
+
+1. Load at least three test cases: one expected to pass, one expected to flag a mismatch, and one that needs clarification.
+2. Optionally use the model to draft test cases, but validate their schema and show them for human confirmation before running them.
+3. Implement the evaluator as normal backend code. Show expected outcome, observed outcome, rule ID, and evidence for every case.
+4. Add the Ripple Map’s approved alternative links and mock inventory values.
+5. Calculate the projection using a visible formula and supplied use-rate assumptions. Validate missing, negative, or inconsistent values instead of inventing replacements.
+6. Draw the medication/location links and show where projected use shifts. Label it “simulation only; not a clinical recommendation.”
+
+**Acceptance criteria:**
+
+- The same test data always produces the same rule-engine result.
+- Three cases display their expected and observed outcomes.
+- The Ripple Map shows at least two connected medications and one location-level projection.
+- Every projected number has visible inputs and assumptions.
+
+### Sprint 5 — Shadow Mode (about 3 hours)
+
+**Goal:** A read-only event stream produces a clear finding when repeated events differ from the confirmed policy or expected pattern.
+
+**Sprint backlog:** G1–G6, H2–H5, I1.
+
+**Instructions:**
+
+1. Load the fictional event stream from local demo data; do not connect to a live hospital system.
+2. Compare events with confirmed policy conditions using deterministic code.
+3. Group repeated events by policy, department, event type, and time window.
+4. Create a finding showing the count, representative event IDs, time window, and comparison rule.
+5. Use the model only to draft a concise explanation of a finding already produced by code; attach the event IDs and policy excerpt.
+6. Add review actions and clearly state that Shadow Mode is read-only. It must not block, reroute, or edit orders.
+
+**Acceptance criteria:**
+
+- The seeded event pattern creates one understandable finding.
+- A single unrelated event does not appear as a repeated pattern.
+- The user can mark the pattern expected, dismissed, or for policy review.
+- The interface offers no live system write action.
+
+### Sprint 6 — Integration, demo hardening, and presentation (about 3 hours)
+
+**Goal:** The end-to-end story works reliably from a clean reset, with API and mock modes available.
+
+**Sprint backlog:** I2–I5, H3–H6, B6, all remaining P0 items.
+
+**Instructions:**
+
+1. Run the full story in order: load data → enter policy → confirm rules → review mismatch → run simulation → inspect ripple → view Shadow Mode.
+2. Fix broken links between pages and ensure every feature uses the same confirmed policy and dataset.
+3. Check every error/empty/loading state used in the presentation.
+4. Verify API-key handling again: `.env` ignored, key only used by backend, no secret in logs or UI.
+5. Reset the demo and repeat it once in live API mode and once in mock mode.
+6. Prepare a five-minute presentation explaining the problem, what the AI does, what ordinary code does, and what remains for pharmacist review.
+7. If time remains, take P1 tasks; do not add live integrations or production write actions.
+
+**Acceptance criteria:**
+
+- The full demonstration can be completed in under five minutes after reset.
+- Both live and mock modes have a clear status indicator.
+- Every finding is traceable to evidence and assumptions.
+- No real patient data or production integration is used.
 
 ## 13. Builder working instructions
 
 - Use one shared schema and fixture dataset.
-- Build a working vertical slice before polishing secondary screens.
+- Complete each sprint’s acceptance criteria before pulling in P1 work.
 - Keep model calls on the backend; never expose the API key in browser code.
 - Treat model output as a draft until validated and confirmed by a human.
 - Use application code for calculations, comparisons, thresholds, and graph building.
 - Give every finding an evidence reference and a plain-language reason.
 - Do not implement production write actions.
-- Maintain a mock mode so the demo works without external services.
+- Maintain mock mode so the demo works without external services.
+- If the live model fails, keep the demo moving with the labeled mock response; never hide that it is mock output.
 
 ## 14. Proposed file map
 
@@ -373,6 +463,7 @@ Priority key: **P0** required for the demo; **P1** improves the demo; **P2** fut
 shortage-rollout-checker/
 ├── README.md
 ├── .env.example
+├── .gitignore
 ├── frontend/
 │   ├── package.json
 │   └── src/
@@ -396,8 +487,11 @@ shortage-rollout-checker/
 │       └── styles/global.css
 ├── backend/
 │   ├── pyproject.toml
+│   ├── .env  # local only; ignored by Git; never commit
 │   └── app/
 │       ├── main.py
+│       ├── core/
+│       │   └── config.py
 │       ├── api/
 │       │   ├── policies.py
 │       │   ├── rollout.py
@@ -420,6 +514,9 @@ shortage-rollout-checker/
 │       │   ├── client.py
 │       │   ├── prompts.py
 │       │   └── tools.py
+│       ├── validation/
+│       │   ├── policy_rules.py
+│       │   └── scenario_checks.py
 │       └── data/
 │           ├── seed_demo.py
 │           └── fixtures/
@@ -473,4 +570,169 @@ This is a proposed stack, not a requirement. Keep the API model name configurabl
 - [OpenAI API models](https://developers.openai.com/api/docs/models)
 - [OpenAI Responses API function calling](https://developers.openai.com/api/docs/guides/function-calling)
 - [OpenAI Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
+
+## 18. UML diagrams
+
+These diagrams describe the hackathon prototype. The AI suggests structured drafts and explanations; deterministic services run the checks and calculations. Human review remains required, and the prototype makes no live system changes.
+
+### 18.1 Domain class diagram
+
+This class diagram shows the core records and how policies, medications, system configurations, simulations, events, findings, and evidence relate.
+
+```mermaid
+classDiagram
+    class ShortagePolicy {
+        +String id
+        +PolicyStatus status
+        +Date effectiveDate
+        +String confirmedByUser
+    }
+    class PolicyRule {
+        +String id
+        +String condition
+        +String restriction
+        +String sourceExcerpt
+        +Boolean confirmed
+    }
+    class Medication {
+        +String id
+        +String displayName
+    }
+    class Department {
+        +String id
+        +String name
+    }
+    class SystemConfig {
+        +String id
+        +String systemType
+        +Boolean enabled
+        +String instructionText
+        +String sourceRecordId
+    }
+    class Inventory {
+        +String locationId
+        +Decimal quantityOnHand
+        +Decimal averageDailyUse
+        +Decimal minimumReserve
+    }
+    class AlternativeLink {
+        +String approvedCondition
+        +String approvedByRole
+    }
+    class TestCase {
+        +String id
+        +String scenarioText
+        +String expectedOutcome
+    }
+    class SimulationRun {
+        +String id
+        +DateTime createdAt
+        +String status
+    }
+    class TestResult {
+        +String status
+        +String explanation
+    }
+    class ShadowEvent {
+        +String id
+        +DateTime timestamp
+        +String eventType
+        +String result
+        +String sourceRecordId
+    }
+    class Finding {
+        +String id
+        +String feature
+        +String severity
+        +String summary
+        +String reviewStatus
+    }
+    class EvidenceRecord {
+        +String id
+        +String recordType
+        +String sourceReference
+    }
+    class ActivityEntry {
+        +String id
+        +String actor
+        +String action
+        +DateTime timestamp
+    }
+
+    ShortagePolicy "1" *-- "1..*" PolicyRule : contains
+    PolicyRule --> Medication : applies to
+    PolicyRule --> Department : applies in
+    PolicyRule ..> Medication : may allow approved alternative
+    SystemConfig --> Medication : configures
+    SystemConfig --> Department : applies in
+    Inventory --> Medication : counts
+    Inventory --> Department : located at
+    AlternativeLink --> Medication : source medication
+    AlternativeLink --> Medication : approved alternative
+    TestCase --> PolicyRule : derived from
+    SimulationRun "1" *-- "1..*" TestResult : contains
+    TestResult --> TestCase : evaluates
+    ShadowEvent --> Medication : references
+    ShadowEvent --> Department : occurs in
+    Finding --> PolicyRule : may reference
+    Finding --> TestResult : may reference
+    Finding --> ShadowEvent : may reference
+    Finding "*" --> "1..*" EvidenceRecord : supported by
+    ActivityEntry --> Finding : records review of
+```
+
+### 18.2 Sequence diagram: policy preflight
+
+This sequence shows how policy text moves through the app. The model drafts structured rules and sample cases; the application validates them and runs the simulation.
+
+```mermaid
+sequenceDiagram
+    actor Pharmacist
+    participant WebApp
+    participant Backend
+    participant OpenAI as GPT-5.5
+    participant RuleEngine
+    participant DemoData
+
+    Pharmacist->>WebApp: Enter approved policy text
+    WebApp->>Backend: Submit policy draft
+    Backend->>OpenAI: Extract candidate rules with source excerpts
+    OpenAI-->>Backend: Structured candidate rules
+    Backend-->>WebApp: Show draft and unclear fields
+    Pharmacist->>WebApp: Confirm or edit rules
+    WebApp->>Backend: Save confirmed rules
+    Backend->>DemoData: Store confirmed policy
+    Pharmacist->>WebApp: Run Flight Simulator
+    WebApp->>Backend: Request preflight
+    Backend->>OpenAI: Draft test cases from confirmed rules
+    OpenAI-->>Backend: Structured test cases
+    Backend->>RuleEngine: Validate cases against policy and configuration
+    RuleEngine->>DemoData: Read mock configuration and inventory
+    DemoData-->>RuleEngine: Return demo records
+    RuleEngine-->>Backend: Return results and evidence IDs
+    Backend->>OpenAI: Explain deterministic results
+    OpenAI-->>Backend: Plain-language explanations
+    Backend-->>WebApp: Return findings, evidence, and assumptions
+    WebApp-->>Pharmacist: Display reviewable results
+```
+
+### 18.3 State diagram: policy lifecycle
+
+This state diagram separates pharmacist confirmation from the product’s checks. “Ready for rollout” does not mean the app deploys changes; staff carry out rollout through their approved hospital process.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft
+    Draft --> AwaitingConfirmation: AI drafts candidate rules
+    AwaitingConfirmation --> Draft: Pharmacist edits or clarifies
+    AwaitingConfirmation --> Confirmed: Pharmacist confirms rules
+    Confirmed --> Preflight: Run Flight Simulator
+    Preflight --> Confirmed: Policy or demo data changes
+    Preflight --> ReadyForHumanRollout: Findings reviewed
+    ReadyForHumanRollout --> Monitoring: Staff roll out policy externally
+    Monitoring --> ReviewNeeded: Repeated unexpected pattern found
+    ReviewNeeded --> Confirmed: Pharmacist revises and reconfirms policy
+    Monitoring --> Closed: Shortage response ends
+    Closed --> [*]
+```
 
