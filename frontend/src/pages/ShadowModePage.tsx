@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useActivity } from "../context/ActivityContext";
+import { useDemo } from "../context/DemoContext";
+import { PolicyConfirmationGate } from "../components/PolicyConfirmationGate";
 
 type ReviewStatus = "Needs review" | "Expected" | "Dismissed" | "Review policy";
 
@@ -22,6 +24,7 @@ const events: ShadowEvent[] = [
 
 export function ShadowModePage() {
   const { recordActivity } = useActivity();
+  const { updateFindingStatus, isPolicyConfirmed } = useDemo();
   const [reviewStatus, setReviewStatus] = useState<ReviewStatus>("Needs review");
   const [note, setNote] = useState("");
   const [notice, setNotice] = useState("");
@@ -32,10 +35,12 @@ export function ShadowModePage() {
   }
 
   function saveReview() {
+    updateFindingStatus("F-106", reviewStatus);
     recordActivity({ actor: "Pharmacist reviewer", feature: "Shadow Mode", action: `Marked pattern ${reviewStatus}`, target: "F-106", detail: note || "Reviewed the Emergency Department workaround pattern." });
     setNotice(`Demo review status saved locally as “${reviewStatus}”.`);
   }
 
+  if (!isPolicyConfirmed) return <PolicyConfirmationGate feature="Shadow Mode" />;
   return <section className="shadow-page" aria-labelledby="shadow-title">
     <div className="page-heading">
       <div><p className="eyebrow">Shadow Mode</p><h1 id="shadow-title">Observe patterns without changing orders</h1><p className="page-intro">Review fictional event patterns against confirmed policy behavior. This page is read-only and does not connect to a live clinical system.</p></div>

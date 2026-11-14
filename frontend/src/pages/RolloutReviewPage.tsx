@@ -3,12 +3,14 @@ import { rolloutFindings, systemConfigRecords } from "../data/demoData";
 import type { RolloutFinding } from "../types";
 import { StatusBadge } from "../components/StatusBadge";
 import { useActivity } from "../context/ActivityContext";
+import { useDemo } from "../context/DemoContext";
+import { PolicyConfirmationGate } from "../components/PolicyConfirmationGate";
 
 const reviewOptions = ["Needs review", "Expected", "Dismissed"];
 
 export function RolloutReviewPage() {
   const { recordActivity } = useActivity();
-  const [findings, setFindings] = useState(rolloutFindings);
+  const { rolloutFindings: findings, updateFindingStatus, isPolicyConfirmed } = useDemo();
   const [department, setDepartment] = useState("All departments");
   const [system, setSystem] = useState("All systems");
   const [status, setStatus] = useState("All statuses");
@@ -23,9 +25,11 @@ export function RolloutReviewPage() {
   const departments = [...new Set(findings.map((finding) => finding.department))];
   const systems = [...new Set(findings.map((finding) => finding.systemType))];
 
+  if (!isPolicyConfirmed) return <PolicyConfirmationGate feature="Rollout Review" />;
+
   function updateStatus(findingId: string, reviewStatus: string) {
     const finding = findings.find((item) => item.id === findingId);
-    setFindings((current) => current.map((finding) => finding.id === findingId ? { ...finding, review_status: reviewStatus } : finding));
+    updateFindingStatus(findingId, reviewStatus);
     if (finding) recordActivity({ actor: "Pharmacist reviewer", feature: "Rollout Review", action: `Marked finding ${reviewStatus}`, target: findingId, detail: note || finding.summary });
     setNote("");
   }

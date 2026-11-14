@@ -41,3 +41,14 @@ export interface ActivityEntry {
   target: string;
   detail: string;
 }
+
+export type RuleStatus = "Draft" | "Confirmed" | "Rejected";
+
+export interface CandidateRule {
+  id: string;
+  title: string;
+  condition: string;
+  expectedBehavior: string;
+  sourceExcerpt: string;
+  status: RuleStatus;
+}

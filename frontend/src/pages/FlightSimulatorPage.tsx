@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useActivity } from "../context/ActivityContext";
+import { useDemo } from "../context/DemoContext";
+import { PolicyConfirmationGate } from "../components/PolicyConfirmationGate";
 
 type ResultStatus = "Pass" | "Possible mismatch" | "Needs clarification";
 
@@ -57,6 +59,7 @@ function statusClass(status: ResultStatus) {
 
 export function FlightSimulatorPage() {
   const { recordActivity } = useActivity();
+  const { isPolicyConfirmed } = useDemo();
   const [selectedId, setSelectedId] = useState(testCases[0].id);
   const [hasRun, setHasRun] = useState(false);
   const [showEvidence, setShowEvidence] = useState(false);
@@ -73,6 +76,7 @@ export function FlightSimulatorPage() {
     recordActivity({ actor: "Demo user", feature: "Flight Simulator", action: "Ran sample case", target: selectedCase.id, detail: `Simulation result: ${selectedCase.status}.` });
   }
 
+  if (!isPolicyConfirmed) return <PolicyConfirmationGate feature="The Flight Simulator" />;
   return <section className="simulator-page" aria-labelledby="simulator-title">
     <div className="page-heading">
       <div>
