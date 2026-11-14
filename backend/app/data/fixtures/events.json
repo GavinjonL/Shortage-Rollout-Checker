@@ -1,0 +1,1 @@
+[{"id":"event-001","timestamp":"2026-11-14T09:00:00Z","department_id":"dept-general-ward","medication_id":"med-a","event_type":"order","result":"allowed","source_record_id":"ehr-demo-001"},{"id":"event-002","timestamp":"2026-11-14T10:00:00Z","department_id":"dept-general-ward","medication_id":"med-a","event_type":"order","result":"allowed","source_record_id":"ehr-demo-001"}]

@@ -1,0 +1,1 @@
+[{"medication_id":"med-a","location_id":"loc-main","quantity_on_hand":60,"average_daily_use":12,"minimum_reserve":20},{"medication_id":"med-b","location_id":"loc-main","quantity_on_hand":100,"average_daily_use":10,"minimum_reserve":25}]
