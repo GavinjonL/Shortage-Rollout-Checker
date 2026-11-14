@@ -6,3 +6,20 @@ export interface DemoPolicy {
   effectiveDate: string;
   confirmedRules: number;
 }
+
+export interface RolloutFinding extends Finding {
+  department: string;
+  systemType: string;
+  policyRuleId: string;
+  sourceRecordId: string;
+  evidenceSummary: string;
+}
+
+export interface SystemConfigRecord {
+  id: string;
+  department: string;
+  systemType: string;
+  medication: string;
+  instructionText: string;
+  state: "Aligned" | "Possible mismatch";
+}
