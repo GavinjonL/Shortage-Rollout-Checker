@@ -31,3 +31,13 @@ export interface RippleInventoryRecord {
   averageDailyUse: number;
   minimumReserve: number;
 }
+
+export interface ActivityEntry {
+  id: string;
+  timestamp: string;
+  actor: string;
+  feature: string;
+  action: string;
+  target: string;
+  detail: string;
+}

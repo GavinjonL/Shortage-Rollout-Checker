@@ -2,10 +2,12 @@ import { useMemo, useState } from "react";
 import { rolloutFindings, systemConfigRecords } from "../data/demoData";
 import type { RolloutFinding } from "../types";
 import { StatusBadge } from "../components/StatusBadge";
+import { useActivity } from "../context/ActivityContext";
 
 const reviewOptions = ["Needs review", "Expected", "Dismissed"];
 
 export function RolloutReviewPage() {
+  const { recordActivity } = useActivity();
   const [findings, setFindings] = useState(rolloutFindings);
   const [department, setDepartment] = useState("All departments");
   const [system, setSystem] = useState("All systems");
@@ -22,7 +24,9 @@ export function RolloutReviewPage() {
   const systems = [...new Set(findings.map((finding) => finding.systemType))];
 
   function updateStatus(findingId: string, reviewStatus: string) {
+    const finding = findings.find((item) => item.id === findingId);
     setFindings((current) => current.map((finding) => finding.id === findingId ? { ...finding, review_status: reviewStatus } : finding));
+    if (finding) recordActivity({ actor: "Pharmacist reviewer", feature: "Rollout Review", action: `Marked finding ${reviewStatus}`, target: findingId, detail: note || finding.summary });
     setNote("");
   }
 

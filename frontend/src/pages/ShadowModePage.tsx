@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useActivity } from "../context/ActivityContext";
 
 type ReviewStatus = "Needs review" | "Expected" | "Dismissed" | "Review policy";
 
@@ -20,13 +21,19 @@ const events: ShadowEvent[] = [
 ];
 
 export function ShadowModePage() {
+  const { recordActivity } = useActivity();
   const [reviewStatus, setReviewStatus] = useState<ReviewStatus>("Needs review");
   const [note, setNote] = useState("");
   const [notice, setNotice] = useState("");
 
   function updateReview(status: ReviewStatus) {
     setReviewStatus(status);
-    setNotice(`Demo review status saved locally as “${status}”.`);
+    setNotice(`Selected “${status}”. Save the review to add it to Activity History.`);
+  }
+
+  function saveReview() {
+    recordActivity({ actor: "Pharmacist reviewer", feature: "Shadow Mode", action: `Marked pattern ${reviewStatus}`, target: "F-106", detail: note || "Reviewed the Emergency Department workaround pattern." });
+    setNotice(`Demo review status saved locally as “${reviewStatus}”.`);
   }
 
   return <section className="shadow-page" aria-labelledby="shadow-title">
@@ -51,7 +58,7 @@ export function ShadowModePage() {
         <div className="source-event-strip"><span>Why this was flagged</span><p>Repeated events differ from the expected shortage-policy behavior in the supplied sample data. This is a possible mismatch for review, not a clinical conclusion.</p></div>
       </section>
 
-      <aside className="shadow-review" aria-label="Review controls"><p className="step-label">Pharmacist review</p><h2>Record a demo decision</h2><p>Review actions are stored in this page only until a backend is connected.</p><div className="shadow-actions"><button className={reviewStatus === "Expected" ? "button button--primary" : "button button--secondary"} type="button" onClick={() => updateReview("Expected")}>Expected</button><button className={reviewStatus === "Dismissed" ? "button button--primary" : "button button--secondary"} type="button" onClick={() => updateReview("Dismissed")}>Dismiss</button><button className={reviewStatus === "Review policy" ? "button button--primary" : "button button--secondary"} type="button" onClick={() => updateReview("Review policy")}>Review policy</button></div><label className="note-field" htmlFor="shadow-note">Review note<textarea id="shadow-note" value={note} onChange={(event) => setNote(event.target.value)} placeholder="Optional rationale for the demo…" rows={4} /></label><button className="primary-button" type="button" onClick={() => updateReview(reviewStatus)}>Save review status</button>{notice && <p className="inline-notice" role="status">{notice}</p>}</aside>
+      <aside className="shadow-review" aria-label="Review controls"><p className="step-label">Pharmacist review</p><h2>Record a demo decision</h2><p>Review actions are stored locally for this demo until a backend is connected.</p><div className="shadow-actions"><button className={reviewStatus === "Expected" ? "button button--primary" : "button button--secondary"} type="button" onClick={() => updateReview("Expected")}>Expected</button><button className={reviewStatus === "Dismissed" ? "button button--primary" : "button button--secondary"} type="button" onClick={() => updateReview("Dismissed")}>Dismiss</button><button className={reviewStatus === "Review policy" ? "button button--primary" : "button button--secondary"} type="button" onClick={() => updateReview("Review policy")}>Review policy</button></div><label className="note-field" htmlFor="shadow-note">Review note<textarea id="shadow-note" value={note} onChange={(event) => setNote(event.target.value)} placeholder="Optional rationale for the demo…" rows={4} /></label><button className="primary-button" type="button" onClick={saveReview}>Save review status</button>{notice && <p className="inline-notice" role="status">{notice}</p>}</aside>
     </div>
 
     <section className="event-stream" aria-labelledby="event-stream-title"><div className="section-heading"><div><p className="step-label">Supplied event stream</p><h2 id="event-stream-title">Recent fictional events</h2></div><p>Source IDs are shown for traceability.</p></div><div className="event-table-wrap"><table><thead><tr><th>Time</th><th>Event ID</th><th>Department</th><th>Observed event</th><th>Policy comparison</th></tr></thead><tbody>{events.map((event) => <tr key={event.id}><td>{event.time}</td><td><strong>{event.id}</strong></td><td>{event.department}</td><td>{event.event}</td><td><span className={`event-state event-state--${event.policyComparison === "Included in repeated pattern" ? "flagged" : event.policyComparison === "Matches expected behavior" ? "aligned" : "unmatched"}`}>{event.policyComparison}</span></td></tr>)}</tbody></table></div></section>

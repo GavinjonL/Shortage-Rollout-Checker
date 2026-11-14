@@ -1,3 +1,3 @@
 import { NavLink } from "react-router-dom";
-const links = [["/", "Overview"], ["/policy", "Policy Setup"], ["/rollout", "Rollout Review"], ["/simulator", "Flight Simulator"], ["/ripple", "Ripple Map"], ["/shadow", "Shadow Mode"]] as const;
+const links = [["/", "Overview"], ["/policy", "Policy Setup"], ["/rollout", "Rollout Review"], ["/simulator", "Flight Simulator"], ["/ripple", "Ripple Map"], ["/shadow", "Shadow Mode"], ["/activity", "Activity History"]] as const;
 export function Navigation() { return <aside className="navigation"><div className="navigation__brand"><span className="navigation__mark" aria-hidden="true">SR</span><div><strong>Shortage</strong><span>Rollout Checker</span></div></div><nav aria-label="Main navigation">{links.map(([to, label]) => <NavLink key={to} to={to} end={to === "/"}>{label}</NavLink>)}</nav><div className="navigation__notice"><strong>Demo workspace</strong><span>Fictional data only</span></div></aside>; }

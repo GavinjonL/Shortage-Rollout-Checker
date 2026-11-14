@@ -1,4 +1,4 @@
-import type { DemoPolicy, Finding, RippleInventoryRecord, RolloutFinding, SystemConfigRecord } from "../types";
+import type { ActivityEntry, DemoPolicy, Finding, RippleInventoryRecord, RolloutFinding, SystemConfigRecord } from "../types";
 
 export const activeDemoPolicy: DemoPolicy = { name: "Orion shortage response", status: "Confirmed", effectiveDate: "November 18, 2026", confirmedRules: 3 };
 
@@ -31,4 +31,12 @@ export const rippleInventory: RippleInventoryRecord[] = [
   { medication: "Orion", location: "Infusion Center", quantityOnHand: 42, averageDailyUse: 14, minimumReserve: 14 },
   { medication: "Aurora", location: "Central Pharmacy", quantityOnHand: 84, averageDailyUse: 12, minimumReserve: 28 },
   { medication: "Aurora", location: "Emergency Department", quantityOnHand: 36, averageDailyUse: 4, minimumReserve: 12 },
+];
+
+export const activityEntries: ActivityEntry[] = [
+  { id: "ACT-01", timestamp: "Nov 14, 08:45", actor: "Pharmacist reviewer", feature: "Policy Setup", action: "Confirmed policy rule", target: "POL-01", detail: "Restricted Orion use in the Infusion Center." },
+  { id: "ACT-02", timestamp: "Nov 14, 09:12", actor: "Pharmacy informatics", feature: "Rollout Review", action: "Opened finding", target: "F-104", detail: "Reviewed the EHR order-set configuration record." },
+  { id: "ACT-03", timestamp: "Nov 14, 09:25", actor: "Pharmacist reviewer", feature: "Flight Simulator", action: "Ran sample case", target: "TC-02", detail: "Simulation returned a possible mismatch using supplied mock data." },
+  { id: "ACT-04", timestamp: "Nov 14, 09:38", actor: "Pharmacy operations", feature: "Ripple Map", action: "Viewed projection", target: "POL-02", detail: "Reviewed the approved alternative-use shift scenario." },
+  { id: "ACT-05", timestamp: "Nov 14, 10:00", actor: "Pharmacist reviewer", feature: "Shadow Mode", action: "Opened pattern", target: "F-106", detail: "Reviewed a repeated fictional workaround pattern." },
 ];
