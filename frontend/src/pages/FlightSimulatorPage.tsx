@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useActivity } from "../context/ActivityContext";
 
 type ResultStatus = "Pass" | "Possible mismatch" | "Needs clarification";
 
@@ -55,13 +56,21 @@ function statusClass(status: ResultStatus) {
 }
 
 export function FlightSimulatorPage() {
+  const { recordActivity } = useActivity();
   const [selectedId, setSelectedId] = useState(testCases[0].id);
   const [hasRun, setHasRun] = useState(false);
+  const [showEvidence, setShowEvidence] = useState(false);
   const selectedCase = testCases.find((testCase) => testCase.id === selectedId) ?? testCases[0];
 
   function selectCase(id: string) {
     setSelectedId(id);
     setHasRun(false);
+    setShowEvidence(false);
+  }
+
+  function runSimulation() {
+    setHasRun(true);
+    recordActivity({ actor: "Demo user", feature: "Flight Simulator", action: "Ran sample case", target: selectedCase.id, detail: `Simulation result: ${selectedCase.status}.` });
   }
 
   return <section className="simulator-page" aria-labelledby="simulator-title">
@@ -88,14 +97,14 @@ export function FlightSimulatorPage() {
       </aside>
 
       <article className="simulation-workspace">
-        <div className="card-heading"><div><p className="step-label">Selected scenario</p><h2>{selectedCase.title}</h2></div><button className="primary-button" type="button" onClick={() => setHasRun(true)}>Run simulation</button></div>
+        <div className="card-heading"><div><p className="step-label">Selected scenario</p><h2>{selectedCase.title}</h2></div><button className="primary-button" type="button" onClick={runSimulation}>Run simulation</button></div>
         <div className="scenario-facts"><div><span>Department</span><strong>{selectedCase.department}</strong></div><div><span>Policy rule</span><strong>{selectedCase.ruleId}</strong></div><div><span>Source</span><strong>Supplied sample order</strong></div></div>
         <section className="scenario-panel" aria-labelledby="scenario-input-title"><p className="step-label" id="scenario-input-title">Order conditions</p><p>{selectedCase.scenario}</p></section>
 
         {!hasRun ? <div className="run-placeholder"><span>▸</span><div><strong>Ready to run</strong><p>Run this case to compare the sample order with the confirmed policy rule.</p></div></div> : <section className="simulation-result" aria-live="polite">
           <div className="result-heading"><div><p className="step-label">Simulation result</p><h2>{selectedCase.status}</h2></div><span className={`result-badge result-badge--${statusClass(selectedCase.status)}`}>{selectedCase.status}</span></div>
           <div className="result-comparison"><div><span>Expected policy behavior</span><p>{selectedCase.expected}</p></div><div><span>Observed sample behavior</span><p>{selectedCase.observed}</p></div></div>
-          <div className="result-evidence"><span>Evidence</span><strong>{selectedCase.evidence}</strong><button className="text-button" type="button">View evidence details</button></div>
+          <div className="result-evidence"><span>Evidence</span><strong>{selectedCase.evidence}</strong><button className="text-button" type="button" onClick={() => setShowEvidence((visible) => !visible)}>{showEvidence ? "Hide evidence details" : "View evidence details"}</button>{showEvidence && <p className="evidence-detail-text">This result compares the listed mock order and configuration record with {selectedCase.ruleId}. It is evidence for review only.</p>}</div>
         </section>}
       </article>
     </div>
