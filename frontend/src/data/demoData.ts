@@ -1,4 +1,4 @@
-import type { DemoPolicy, Finding, RolloutFinding, SystemConfigRecord } from "../types";
+import type { DemoPolicy, Finding, RippleInventoryRecord, RolloutFinding, SystemConfigRecord } from "../types";
 
 export const activeDemoPolicy: DemoPolicy = { name: "Orion shortage response", status: "Confirmed", effectiveDate: "November 18, 2026", confirmedRules: 3 };
 
@@ -25,4 +25,10 @@ export const systemConfigRecords: SystemConfigRecord[] = [
   { id: "PUMP-184", department: "Emergency Department", systemType: "Smart-pump library", medication: "Orion", instructionText: "New limit effective November 25.", state: "Possible mismatch" },
   { id: "ADC-082", department: "Infusion Center", systemType: "Dispensing cabinet", medication: "Orion", instructionText: "Restricted per shortage policy.", state: "Aligned" },
   { id: "BUY-031", department: "Central Pharmacy", systemType: "Purchasing record", medication: "Aurora", instructionText: "Approved alternative link recorded.", state: "Aligned" },
+];
+
+export const rippleInventory: RippleInventoryRecord[] = [
+  { medication: "Orion", location: "Infusion Center", quantityOnHand: 42, averageDailyUse: 14, minimumReserve: 14 },
+  { medication: "Aurora", location: "Central Pharmacy", quantityOnHand: 84, averageDailyUse: 12, minimumReserve: 28 },
+  { medication: "Aurora", location: "Emergency Department", quantityOnHand: 36, averageDailyUse: 4, minimumReserve: 12 },
 ];

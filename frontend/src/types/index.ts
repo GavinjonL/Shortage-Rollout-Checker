@@ -23,3 +23,11 @@ export interface SystemConfigRecord {
   instructionText: string;
   state: "Aligned" | "Possible mismatch";
 }
+
+export interface RippleInventoryRecord {
+  medication: string;
+  location: string;
+  quantityOnHand: number;
+  averageDailyUse: number;
+  minimumReserve: number;
+}
