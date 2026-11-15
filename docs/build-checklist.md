@@ -103,11 +103,11 @@ This checklist tracks the current Builder Plan against the repository as of Nove
 
 ### Epic J — Future work
 
-- [ ] **J1 (P2):** Validate the claimed market distinction with incumbent vendors.
-- [ ] **J2 (P2):** Review the workflow with hospital pharmacists and pharmacy-informatics staff.
-- [ ] **J3 (P2):** Explore secure, read-only health-system integrations.
-- [ ] **J4 (P2):** Review privacy, security, governance, and deployment requirements.
-- [ ] **J5 (P2):** Evaluate accuracy, missed issues, review time, and staff trust with approved evaluation data.
+- [ ] **J1 (P2):** Validate the claimed market distinction with incumbent vendors. Readiness protocol: `docs/future-work-readiness.md`.
+- [ ] **J2 (P2):** Review the workflow with hospital pharmacists and pharmacy-informatics staff. Readiness protocol: `docs/future-work-readiness.md`.
+- [ ] **J3 (P2):** Explore secure, read-only health-system integrations. Readiness architecture/checklist: `docs/future-work-readiness.md`.
+- [ ] **J4 (P2):** Review privacy, security, governance, and deployment requirements. Readiness checklist: `docs/future-work-readiness.md`.
+- [ ] **J5 (P2):** Evaluate accuracy, missed issues, review time, and staff trust with approved evaluation data. Evaluation protocol: `docs/future-work-readiness.md`.
 
 ## Recommended next sequence
 
