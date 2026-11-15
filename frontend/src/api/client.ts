@@ -1,16 +1,8 @@
+import type { DemoDataset } from "../types";
+
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
-export type DemoDataset = {
-  policy: { id: string; name: string; rules: Array<{ source_excerpt: string }> };
-  medications: Array<{ id: string; name: string; form: string }>;
-  departments: Array<{ id: string; name: string }>;
-  configurations: Array<{ id: string }>;
-  test_cases: Array<{ id: string }>;
-  inventory: Array<{ medication_id: string }>;
-  alternatives: Array<{ source_medication_id: string; alternative_medication_id: string }>;
-  events: Array<{ id: string }>;
-  findings: Array<{ id: string }>;
-};
+export type { DemoDataset } from "../types";
 
 export async function fetchDemoData(): Promise<DemoDataset> {
   const response = await fetch(`${API_URL}/api/demo`);
@@ -37,6 +29,27 @@ export async function runSimulationCase(caseId: string, instructionText: string 
   const body = await response.json().catch(() => null) as SimulationResult | { detail?: string } | null;
   if (!response.ok) throw new Error(body && "detail" in body ? body.detail ?? "Unable to run simulation." : "Unable to run simulation.");
   return body as SimulationResult;
+}
+
+export async function resetDemoData(): Promise<DemoDataset> {
+  const response = await fetch(`${API_URL}/api/demo/reset`, { method: "POST" });
+  if (!response.ok) throw new Error("Unable to reset the fictional demo data.");
+  return response.json() as Promise<DemoDataset>;
+}
+
+export type ImportValidationError = { row: number; field: string; message: string };
+export type DemoImportResponse = { imported_rows: number; errors: ImportValidationError[]; dataset: DemoDataset | null };
+
+export async function importDemoTable(table: string, file: File): Promise<DemoImportResponse> {
+  const format = file.name.toLowerCase().endsWith(".csv") ? "csv" : "json";
+  const response = await fetch(`${API_URL}/api/demo/import/${table}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ format, content: await file.text() }),
+  });
+  const body = await response.json().catch(() => null) as DemoImportResponse | { detail?: string } | null;
+  if (!response.ok) throw new Error(body && "detail" in body ? body.detail ?? "Unable to import demo data." : "Unable to import demo data.");
+  return body as DemoImportResponse;
 }
 
 export type ExtractedPolicyRule = {

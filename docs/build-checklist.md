@@ -18,10 +18,10 @@ This checklist tracks the current Builder Plan against the repository as of Nove
 - [x] **A1 (P0):** Frontend/backend projects and local start instructions exist.
 - [x] **A2 (P0):** `.gitignore` covers environment files, caches, and build output.
 - [x] **A3 (P0):** `.env.example` contains provider/model placeholders and no credential.
-- [ ] **A4 (P0):** Define and mirror every shared schema, including `ShortagePolicy`, across frontend and backend. Backend coverage is largely present; frontend types and a named `ShortagePolicy` model remain incomplete.
-- [ ] **A5 (P0):** Complete the fictional seed scenario. It has two departments, three medications, an approved alternative, and a mismatch; add at least two more events to reach six.
-- [ ] **A6 (P0):** Make reset and Load demo data restore the same backend fixture state. Loading calls `GET /api/demo`; reset is still browser-local.
-- [ ] **A7 (P1):** Add CSV/JSON import with row-level validation errors.
+- [x] **A4 (P0):** Shared backend schemas are mirrored as frontend TypeScript contracts, including `ShortagePolicy`.
+- [x] **A5 (P0):** The fictional seed scenario has two departments, three medications, one approved alternative, one mismatch, and six mock events.
+- [x] **A6 (P0):** Load and reset use the same backend fixture state; reset restores the in-memory demo from committed fixtures.
+- [x] **A7 (P1):** CSV/JSON imports validate every row and return row-level field errors without partially applying invalid files.
 - [x] **A8 (P0):** Backend health endpoint and frontend-to-backend request configuration exist.
 
 ### Epic B — API key and model connection
