@@ -8,6 +8,7 @@ from app.api.rollout import router as rollout_router
 from app.api.simulator import router as simulator_router
 from app.api.ripple import router as ripple_router
 from app.api.shadow import router as shadow_router
+from app.api.demo import router as demo_router
 
 app = FastAPI(title="Shortage Rollout Checker", version="0.1.0")
 allowed_origins = [origin.strip() for origin in os.getenv(
@@ -25,6 +26,7 @@ app.include_router(rollout_router)
 app.include_router(simulator_router)
 app.include_router(ripple_router)
 app.include_router(shadow_router)
+app.include_router(demo_router)
 
 @app.get("/health")
 def health() -> dict[str, str]:

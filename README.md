@@ -35,6 +35,18 @@ uvicorn app.main:app --reload
 
 The health check is at `http://localhost:8000/health`. The AI endpoint is `POST http://localhost:8000/api/policies/extract`; the key remains server-side.
 
+### Start the frontend
+
+In a second terminal:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Open the local Vite URL (normally `http://localhost:5173`) and select **Load demo data**. The browser requests `GET http://localhost:8000/api/demo`, which returns one validated, fully fictional scenario: two departments, three fictional medications, one approved alternative link, one possible configuration mismatch, and several read-only events. No live hospital system is contacted.
+
 ### Test the extraction endpoint
 
 With the server running, use fictional text only:

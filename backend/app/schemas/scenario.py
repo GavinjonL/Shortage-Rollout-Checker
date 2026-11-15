@@ -1,6 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class TestCase(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     id: str
     policy_id: str
     department_id: str

@@ -4,7 +4,7 @@ from app.services.rollout_checker import check_rollout
 
 def test_confirmed_restriction_flags_stale_matching_configuration():
     rule = PolicyRule(
-        id="rule-1", policy_id="p", medication_id="MED-A", department_id="DEPT-GENERAL-WARD",
+        id="rule-1", policy_id="p", medication_id="med-a-iv", department_id="dept-emergency",
         condition="During shortage", restriction="Restrict use", approved_alternative_id="MED-B",
         effective_date="2026-11-15", source_excerpt="Fictional source", confirmed_by_user=True,
     )
@@ -15,7 +15,7 @@ def test_confirmed_restriction_flags_stale_matching_configuration():
 
 def test_unconfirmed_rule_does_not_generate_finding():
     rule = PolicyRule(
-        id="rule-1", policy_id="p", medication_id="MED-A", department_id="DEPT-GENERAL-WARD",
+        id="rule-1", policy_id="p", medication_id="med-a-iv", department_id="dept-emergency",
         condition="During shortage", restriction="Restrict use", approved_alternative_id=None,
         effective_date="2026-11-15", source_excerpt="Fictional source", confirmed_by_user=False,
     )

@@ -1,0 +1,5 @@
+[
+  {"id":"test-001","policy_id":"policy-demo-001","department_id":"dept-emergency","medication_id":"med-a-iv","scenario_text":"Eligible fictional order while the shortage flag is active.","expected_outcome":"Display the approved MED-B alternative.","source_rule_id":"rule-001"},
+  {"id":"test-002","policy_id":"policy-demo-001","department_id":"dept-emergency","medication_id":"med-a-iv","scenario_text":"Fictional order with an oral-administration contraindication.","expected_outcome":"Do not infer an alternative without pharmacist review.","source_rule_id":"rule-001"},
+  {"id":"test-003","policy_id":"policy-demo-001","department_id":"dept-infusion","medication_id":"med-c-reserve","scenario_text":"Fictional order without a supplied shortage flag.","expected_outcome":"Flag the missing condition for review.","source_rule_id":"rule-001"}
+]

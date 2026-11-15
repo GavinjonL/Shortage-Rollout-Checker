@@ -1,1 +1,6 @@
-[{"id":"event-001","timestamp":"2026-11-14T09:00:00Z","department_id":"dept-general-ward","medication_id":"med-a","event_type":"order","result":"allowed","source_record_id":"ehr-demo-001"},{"id":"event-002","timestamp":"2026-11-14T10:00:00Z","department_id":"dept-general-ward","medication_id":"med-a","event_type":"order","result":"allowed","source_record_id":"ehr-demo-001"}]
+[
+  {"id":"event-001","timestamp":"2026-11-15T09:00:00Z","department_id":"dept-emergency","medication_id":"med-a-iv","event_type":"order","result":"allowed","source_record_id":"ehr-demo-001"},
+  {"id":"event-002","timestamp":"2026-11-15T10:00:00Z","department_id":"dept-emergency","medication_id":"med-a-iv","event_type":"order","result":"allowed","source_record_id":"ehr-demo-001"},
+  {"id":"event-003","timestamp":"2026-11-15T11:00:00Z","department_id":"dept-infusion","medication_id":"med-c-reserve","event_type":"guidance_viewed","result":"current","source_record_id":"pump-demo-001"},
+  {"id":"event-004","timestamp":"2026-11-15T12:00:00Z","department_id":"dept-emergency","medication_id":"med-b-oral","event_type":"alternative_selected","result":"recorded","source_record_id":"ehr-demo-002"}
+]

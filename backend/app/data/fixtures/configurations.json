@@ -1,1 +1,5 @@
-[{"id":"config-001","system_type":"ehr","department_id":"dept-general-ward","medication_id":"med-a","enabled":true,"instruction_text":"Available for routine use.","source_record_id":"ehr-demo-001"}]
+[
+  {"id":"config-001","system_type":"ehr_order_set","department_id":"dept-emergency","medication_id":"med-a-iv","enabled":true,"instruction_text":"MED-A is available for routine use.","source_record_id":"ehr-demo-001"},
+  {"id":"config-002","system_type":"dispensing_cabinet","department_id":"dept-emergency","medication_id":"med-a-iv","enabled":true,"instruction_text":"MED-A restricted; display current shortage guidance.","source_record_id":"adc-demo-001"},
+  {"id":"config-003","system_type":"smart_pump_library","department_id":"dept-infusion","medication_id":"med-c-reserve","enabled":true,"instruction_text":"Fictional reserve medication guidance is current.","source_record_id":"pump-demo-001"}
+]
