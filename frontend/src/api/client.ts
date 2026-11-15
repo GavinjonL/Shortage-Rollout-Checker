@@ -1,14 +1,6 @@
-import type { DemoDataset, PolicyRule } from "../types";
+import type { PolicyRule } from "../types";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
-
-export type { DemoDataset } from "../types";
-
-export async function fetchDemoData(): Promise<DemoDataset> {
-  const response = await fetch(`${API_URL}/api/demo`);
-  if (!response.ok) throw new Error("Unable to load fictional demo data from the backend.");
-  return response.json() as Promise<DemoDataset>;
-}
 
 export type SimulatorConfiguration = { id: string; enabled: boolean; instruction_text: string; source_record_id: string };
 export type SimulatorTestCase = { id: string; title: string; department_id: string; scenario_text: string; expected_outcome: string; source_rule_id: string; configuration_id: string | null };
@@ -17,7 +9,7 @@ export type SimulationResult = { case_id: string; status: "Pass" | "Possible mis
 
 export async function fetchSimulationCases(): Promise<SimulatorCase[]> {
   const response = await fetch(`${API_URL}/api/simulator/cases`);
-  if (!response.ok) throw new Error("Unable to load fictional simulation cases.");
+  if (!response.ok) throw new Error("Unable to load simulation cases.");
   return response.json() as Promise<SimulatorCase[]>;
 }
 
@@ -37,27 +29,6 @@ export type ShadowFinding = { id: string; summary: string; reason: string; evide
 export async function fetchShadowFindings() { const response = await fetch(`${API_URL}/api/shadow/findings`); if (!response.ok) throw new Error("Unable to load Shadow Mode findings."); return response.json() as Promise<{ findings: ShadowFinding[] }>; }
 export async function saveShadowReview(id: string, status: string, note: string) { const response = await fetch(`${API_URL}/api/shadow/findings/${id}/review`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status, note }) }); if (!response.ok) throw new Error("Unable to save Shadow Mode review."); }
 export async function createShadowFollowUp(id: string) { const response = await fetch(`${API_URL}/api/shadow/findings/${id}/create-test-case`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ confirmed: true }) }); if (!response.ok) throw new Error("Unable to create follow-up case."); }
-
-export async function resetDemoData(): Promise<DemoDataset> {
-  const response = await fetch(`${API_URL}/api/demo/reset`, { method: "POST" });
-  if (!response.ok) throw new Error("Unable to reset the fictional demo data.");
-  return response.json() as Promise<DemoDataset>;
-}
-
-export type ImportValidationError = { row: number; field: string; message: string };
-export type DemoImportResponse = { imported_rows: number; errors: ImportValidationError[]; dataset: DemoDataset | null };
-
-export async function importDemoTable(table: string, file: File): Promise<DemoImportResponse> {
-  const format = file.name.toLowerCase().endsWith(".csv") ? "csv" : "json";
-  const response = await fetch(`${API_URL}/api/demo/import/${table}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ format, content: await file.text() }),
-  });
-  const body = await response.json().catch(() => null) as DemoImportResponse | { detail?: string } | null;
-  if (!response.ok) throw new Error(body && "detail" in body ? body.detail ?? "Unable to import demo data." : "Unable to import demo data.");
-  return body as DemoImportResponse;
-}
 
 export type ExtractedPolicyRule = {
   medication_id: string | null;
