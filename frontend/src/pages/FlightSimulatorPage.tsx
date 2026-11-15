@@ -3,6 +3,7 @@ import { fetchSimulationCases, runSimulationCase, type SimulationResult, type Si
 import { useActivity } from "../context/ActivityContext";
 import { useDemo } from "../context/DemoContext";
 import { PolicyConfirmationGate } from "../components/PolicyConfirmationGate";
+import { StatePanel } from "../components/StatePanel";
 
 function statusClass(status: string) { return status.toLowerCase().replace(/ /g, "-"); }
 
@@ -42,6 +43,9 @@ export function FlightSimulatorPage() {
   }
 
   if (!isPolicyConfirmed) return <PolicyConfirmationGate feature="The Flight Simulator" />;
+  if (isLoading) return <StatePanel kind="loading" title="Loading sample cases" message="Retrieving fictional, read-only simulation data." />;
+  if (error) return <StatePanel kind="error" title="Simulation data unavailable" message={error} />;
+  if (!selected) return <StatePanel kind="empty" title="No sample cases available" message="Load or reset the fictional demo data, then try again." />;
   return <section className="simulator-page" aria-labelledby="simulator-title">
     <div className="page-heading"><div><p className="eyebrow">Shortage Flight Simulator</p><h1 id="simulator-title">Test a sample order before rollout</h1><p className="page-intro">Compare supplied fictional orders against confirmed shortage-policy rules. This prototype never sends, changes, or blocks a live order.</p></div><div className="simulation-label">Simulation only · Demo data</div></div>
     <div className="simulation-banner" role="note"><strong>Review-only result.</strong> These deterministic checks use supplied sample data and do not provide a clinical recommendation.</div>
