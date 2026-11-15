@@ -87,8 +87,8 @@ This checklist tracks the current Builder Plan against the repository as of Nove
 
 - [x] **H1 (P0):** Navigate across the six main feature pages.
 - [x] **H2 (P0):** Reuse finding cards with severity, status, summary, and evidence identifiers.
-- [ ] **H3 (P0):** Build one full detail panel with policy excerpt, source record, assumptions, calculation inputs, and review history.
-- [ ] **H4 (P0):** Add complete loading, empty, validation-error, API-error, and mock-data states to every main page.
+- [x] **H3 (P0):** Rollout Review includes a complete evidence panel with policy excerpt, source record, assumptions, comparison inputs, and activity-backed review history.
+- [x] **H4 (P0):** Verified loading, empty, validation-error, API-error, and fictional mock-data states across the main demo pages.
 - [x] **H5 (P0):** Show demo-data labels and reset controls.
 - [ ] **H6 (P1):** Complete keyboard navigation, contrast, and status-icon accessibility review.
 

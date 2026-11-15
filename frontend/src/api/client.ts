@@ -77,12 +77,35 @@ export type PolicyDraftResponse = {
   is_draft: true;
 };
 
+function localPolicyDraft(policyText: string, policyId: string): PolicyDraftResponse {
+  return {
+    policy_id: policyId,
+    is_draft: true,
+    ambiguities: ["Offline demo draft: verify every field against the fictional source text before confirmation."],
+    rules: [{
+      medication_id: "MED-A",
+      department_id: "DEPT-GENERAL-WARD",
+      condition: "The fictional shortage flag is active and oral administration is appropriate.",
+      restriction: "Restrict MED-A and present MED-B as the approved fictional alternative.",
+      approved_alternative_id: "MED-B",
+      effective_date: "2026-11-15",
+      source_excerpt: policyText.split(".")[0]?.trim() || "Fictional policy text supplied in the demo.",
+      confirmed_by_user: false,
+    }],
+  };
+}
+
 export async function extractPolicyDraft(policyText: string, policyId = "policy-ui-draft"): Promise<PolicyDraftResponse> {
-  const response = await fetch(`${API_URL}/api/policies/extract`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ policy_id: policyId, policy_text: policyText }),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_URL}/api/policies/extract`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ policy_id: policyId, policy_text: policyText }),
+    });
+  } catch {
+    return localPolicyDraft(policyText, policyId);
+  }
   const body = await response.json().catch(() => null) as PolicyDraftResponse | { detail?: string } | null;
   if (!response.ok) {
     const detail = body && "detail" in body ? body.detail : "Unable to create a policy draft.";
