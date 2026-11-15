@@ -71,17 +71,17 @@ This checklist tracks the current Builder Plan against the repository as of Nove
 - [x] **F3 (P0):** Validate missing, negative, zero-use, and reserve-inconsistent inventory values before a backend projection is returned.
 - [x] **F4 (P0):** Display medication/location nodes and directional use shift.
 - [x] **F5 (P0):** Show formula, inputs, assumptions, and non-recommendation labeling.
-- [ ] **F6 (P1):** Backend supports a primary and comparison projection; add the user-facing side-by-side comparison controls.
+- [x] **F6 (P1):** Compare two user-selected scenarios side by side using the shared backend projection.
 
 ### Epic G — Shadow Mode
 
 - [x] **G1 (P0):** Load the fictional event stream in the read-only backend analyzer. The feature page still needs to consume it.
 - [x] **G2 (P0):** Deterministically compare relevant allowed events with confirmed rules in the backend.
 - [x] **G3 (P0):** Group repeated events in the backend by confirmed policy rule, department, event type, and configurable time window.
-- [ ] **G4 (P0):** Backend findings include event counts, representative evidence IDs, a time window, and a reason; render those shared findings in the feature page.
+- [x] **G4 (P0):** Render shared findings with event count, representative evidence IDs, time window, and reason in Shadow Mode.
 - [x] **G5 (P0):** Provide a clearly read-only, review-only Shadow Mode page.
 - [x] **G6 (P0):** Provide review-only Expected, Dismissed, and Review policy actions with note support in the backend and local UI.
-- [ ] **G7 (P1):** Backend creates a simulator case only after explicit confirmation; add the user-facing confirmation action and simulator refresh flow.
+- [x] **G7 (P1):** Allow the user to explicitly create a follow-up Flight Simulator case from a Shadow Mode finding.
 
 ### Epic H — Shared interface and evidence
 
