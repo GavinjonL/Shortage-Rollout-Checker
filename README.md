@@ -33,6 +33,14 @@ py -m pip install -e ".[test]"
 uvicorn app.main:app --reload
 ```
 
+For a reliable local server that releases its port when you press `Ctrl+C`, use the included launcher from `backend/` instead:
+
+```powershell
+.\scripts\run_backend.ps1
+```
+
+Use `-Reload` only while editing server code; it intentionally starts a supervisor and worker process.
+
 The health check is at `http://localhost:8000/health`. The AI endpoint is `POST http://localhost:8000/api/policies/extract`; the key remains server-side.
 
 ### Start the frontend

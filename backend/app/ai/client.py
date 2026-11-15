@@ -12,6 +12,7 @@ from pydantic import ValidationError
 
 from app.ai.prompts import POLICY_DRAFTING_SYSTEM_PROMPT
 from app.schemas.policy import DraftPolicyRule, PolicyDraft
+from app.services.audit_log import begin_call, finish_call
 
 GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 
@@ -122,6 +123,7 @@ class OpenAICompatiblePolicyExtractor:
         self.client = OpenAI(api_key=settings.api_key, base_url=settings.base_url, timeout=20.0, max_retries=0)
 
     def extract(self, policy_text: str, policy_id: str) -> PolicyDraft:
+        started = begin_call("policy_extraction")
         try:
             response = self.client.chat.completions.create(
                 model=self.settings.model,
@@ -136,20 +138,29 @@ class OpenAICompatiblePolicyExtractor:
                 raise PolicyExtractionError("The AI provider returned no draft content.", 502)
             parsed = json.loads(content)
             draft = PolicyDraft.model_validate({"policy_id": policy_id, **parsed})
-            return _validate_evidence(draft, policy_text)
+            result = _validate_evidence(draft, policy_text)
+            finish_call("policy_extraction", started, "success")
+            return result
         except PolicyExtractionError:
+            finish_call("policy_extraction", started, "error")
             raise
         except AuthenticationError as exc:
+            finish_call("policy_extraction", started, "error")
             raise PolicyExtractionError("AI provider authentication failed. Check the local API key.", 502) from exc
         except RateLimitError as exc:
+            finish_call("policy_extraction", started, "rate_limited")
             raise PolicyExtractionError("AI provider rate limit reached. Wait and try again.", 429) from exc
         except (APITimeoutError, APIConnectionError) as exc:
+            finish_call("policy_extraction", started, "unavailable")
             raise PolicyExtractionError("AI provider is unavailable or timed out. Try again later or use AI_PROVIDER=mock.", 503) from exc
         except NotFoundError as exc:
+            finish_call("policy_extraction", started, "error")
             raise PolicyExtractionError("Configured AI model is unavailable. Check the model name.", 502) from exc
         except APIStatusError as exc:
+            finish_call("policy_extraction", started, "error")
             raise PolicyExtractionError("AI provider rejected the extraction request. Check provider configuration.", 502) from exc
         except (json.JSONDecodeError, ValidationError, KeyError, IndexError, TypeError) as exc:
+            finish_call("policy_extraction", started, "invalid_response")
             raise PolicyExtractionError("AI provider returned an invalid policy draft.", 502) from exc
 
 
