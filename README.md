@@ -1,1 +1,50 @@
-# Shortage-Rollout-Checker
+# Shortage Rollout Checker
+
+A fictional, review-only prototype for checking whether already-approved medication-shortage policies were implemented consistently. It does not provide treatment recommendations, use patient data, or modify hospital systems.
+
+## AI policy extraction (Groq by default)
+
+The backend turns fictional policy text into an **unconfirmed draft**. Every extracted rule includes the original supporting excerpt, and a pharmacist must review and confirm it before any deterministic rollout, simulation, inventory, or Shadow Mode workflow can use it.
+
+### 1. Create a free Groq key
+
+Create an account at [Groq Console](https://console.groq.com), then create an API key in its API Keys settings. Keep the key private: do not paste it into source code, browser JavaScript, screenshots, or chat.
+
+### 2. Configure your local environment
+
+At the repository root, copy `.env.example` to a new file named `.env`. The new `.env` is ignored by Git.
+
+```env
+AI_PROVIDER=groq
+GROQ_API_KEY=your_key_here
+GROQ_MODEL=openai/gpt-oss-120b
+```
+
+`AI_PROVIDER=mock` is an offline fallback. It returns an explicitly non-interpreted empty draft so local UI/API development still works without credentials. To switch providers later, set `AI_PROVIDER=openai` and configure `OPENAI_API_KEY` and `OPENAI_MODEL`; application services do not need to change.
+
+### 3. Install and start the backend
+
+From `backend/`, create/activate a Python 3.11+ virtual environment, then install the project and test extras:
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+py -m pip install -e ".[test]"
+uvicorn app.main:app --reload
+```
+
+The health check is at `http://localhost:8000/health`. The AI endpoint is `POST http://localhost:8000/api/policies/extract`; the key remains server-side.
+
+### Test the extraction endpoint
+
+With the server running, use fictional text only:
+
+```powershell
+Invoke-RestMethod -Method Post -Uri http://localhost:8000/api/policies/extract -ContentType 'application/json' -Body '{"policy_id":"policy-demo-001","policy_text":"MED-A is restricted to DEPT-ER effective 2026-11-15. MED-B is the approved alternative for MED-A."}'
+```
+
+Run offline tests from `backend/` with `pytest`. They mock all provider calls, so they never consume API credits. A real one-request check is optional and manual: after configuring a valid Groq key, run `python scripts/smoke_groq.py` from `backend/`.
+
+Groq currently documents support for strict JSON Schema output with `openai/gpt-oss-120b`; this project uses that mode and additionally verifies that each returned source excerpt appears in the submitted policy. The model is used only for interpretation. Python validation and later deterministic services own all policy checks, calculations, and event detection.
+
+Groq can return HTTP 429 when its free-tier/request limits are reached. The endpoint returns a clear 429 without automatically retrying, avoiding surprise usage; wait and retry later. Authentication, timeout, unavailable-model, malformed-output, and network failures also return safe errors rather than crashing the application.
