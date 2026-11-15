@@ -66,22 +66,22 @@ This checklist tracks the current Builder Plan against the repository as of Nove
 
 ### Epic F — Shortage Ripple Map
 
-- [ ] **F1 (P0):** Enforce approved-only alternative links in application code. The approved link is present in fixtures.
+- [x] **F1 (P0):** Enforce approved-only alternative links in the backend projection service.
 - [x] **F2 (P0):** Calculate a transparent projection from supplied quantities and use rates in both the backend service and current browser demo.
 - [x] **F3 (P0):** Validate missing, negative, zero-use, and reserve-inconsistent inventory values before a backend projection is returned.
 - [x] **F4 (P0):** Display medication/location nodes and directional use shift.
 - [x] **F5 (P0):** Show formula, inputs, assumptions, and non-recommendation labeling.
-- [ ] **F6 (P1):** Compare two scenarios side by side.
+- [ ] **F6 (P1):** Backend supports a primary and comparison projection; add the user-facing side-by-side comparison controls.
 
 ### Epic G — Shadow Mode
 
 - [x] **G1 (P0):** Load the fictional event stream in the read-only backend analyzer. The feature page still needs to consume it.
 - [x] **G2 (P0):** Deterministically compare relevant allowed events with confirmed rules in the backend.
-- [ ] **G3 (P0):** Complete grouping by policy, department, event type, and explicit time window. Current backend grouping lacks a time-window dimension.
-- [ ] **G4 (P0):** Complete grouped findings with a time window and explicit reason, then render them in the feature page. Current backend findings have counts and evidence IDs but the UI remains static.
+- [x] **G3 (P0):** Group repeated events in the backend by confirmed policy rule, department, event type, and configurable time window.
+- [ ] **G4 (P0):** Backend findings include event counts, representative evidence IDs, a time window, and a reason; render those shared findings in the feature page.
 - [x] **G5 (P0):** Provide a clearly read-only, review-only Shadow Mode page.
-- [x] **G6 (P0):** Provide local Expected, Dismissed, and Review policy controls with a note field.
-- [ ] **G7 (P1):** Allow a confirmed Shadow Mode finding to become a simulator case.
+- [x] **G6 (P0):** Provide review-only Expected, Dismissed, and Review policy actions with note support in the backend and local UI.
+- [ ] **G7 (P1):** Backend creates a simulator case only after explicit confirmation; add the user-facing confirmation action and simulator refresh flow.
 
 ### Epic H — Shared interface and evidence
 
@@ -113,5 +113,5 @@ This checklist tracks the current Builder Plan against the repository as of Nove
 
 1. Finish remaining Sprint 1 fixture and shared-contract gaps: six events, frontend shared types, and backend-backed reset.
 2. Complete Sprint 2 safety/integration gaps: backend confirmation, tool dispatcher, safe connectivity check, and usable mock policy drafting.
-3. Connect the existing rollout, Ripple Map, and Shadow Mode backend services to their respective pages and the same confirmed policy state.
+3. Connect the existing rollout, Ripple Map, and Shadow Mode backend services to their respective pages and the same confirmed policy state; finish the remaining comparison and follow-up-case UI controls.
 4. Finish the end-to-end clean-reset rehearsal and presentation hardening only after every P0 feature uses the same evidence records.
