@@ -20,7 +20,7 @@ export function RolloutReviewPage() {
   const filteredFindings = useMemo(() => findings.filter((finding) =>
     (department === "All departments" || finding.department === department)
     && (system === "All systems" || finding.systemType === system)
-    && (status === "All statuses" || finding.review_status === status), [findings, department, system, status]);
+    && (status === "All statuses" || finding.review_status === status)), [findings, department, system, status]);
   const selectedFinding = findings.find((finding) => finding.id === selectedId) ?? findings[0];
   const departments = [...new Set(findings.map((finding) => finding.department))];
   const systems = [...new Set(findings.map((finding) => finding.systemType))];
