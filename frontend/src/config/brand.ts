@@ -2,8 +2,8 @@
 // `frontend/public` (for example, "/my-logo.svg") or left undefined to use
 // the text mark.
 export const brand = {
-  name: "Shortage Rollout Checker",
-  shortName: "Shortage",
-  logoMark: "SR",
-  logoUrl: undefined as string | undefined,
+  name: "MedSync",
+  shortName: "MedSync",
+  logoMark: "MS",
+  logoUrl: "/medsync-logo.png" as string | undefined,
 };
