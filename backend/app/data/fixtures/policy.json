@@ -12,7 +12,7 @@
       "approved_alternative_id": "med-b-oral",
       "effective_date": "2026-11-15",
       "source_excerpt": "When the fictional MED-A shortage flag is active, Emergency Department orders use the approved MED-B alternative when eligible.",
-      "confirmed_by_user": false
+      "confirmed_by_user": true
     }
   ]
 }

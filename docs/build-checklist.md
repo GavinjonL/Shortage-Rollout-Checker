@@ -58,11 +58,11 @@ This checklist tracks the current Builder Plan against the repository as of Nove
 ### Epic E — Shortage Flight Simulator
 
 - [x] **E1 (P0):** Provide three supplied sample cases.
-- [ ] **E2 (P0):** Validate each runnable case against the backend `TestCase` schema.
-- [ ] **E3 (P0):** Implement the deterministic backend evaluator.
+- [x] **E2 (P0):** Validate every runnable case with the backend `TestCase` schema; generated cases can be checked through `POST /api/simulator/validate`.
+- [x] **E3 (P0):** Implement the deterministic backend evaluator with explicit pass, possible-mismatch, and needs-clarification outcomes.
 - [x] **E4 (P0):** Show static demo results with expected/observed behavior and evidence.
 - [x] **E5 (P0):** Label simulations as supplied-data, review-only results.
-- [ ] **E6 (P1):** Support configuration changes and reruns.
+- [x] **E6 (P1):** Allow an in-memory mock-configuration edit and rerun without changing a live system.
 
 ### Epic F — Shortage Ripple Map
 
