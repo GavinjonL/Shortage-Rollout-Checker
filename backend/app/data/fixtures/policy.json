@@ -1,1 +1,18 @@
-{"id":"policy-demo-001","rules":[{"id":"rule-001","policy_id":"policy-demo-001","medication_id":"med-a","department_id":"dept-critical-care","condition":"Routine use","restriction":"Restrict use","approved_alternative_id":"med-b","effective_date":"2026-11-14","source_excerpt":"Medication A is restricted to critical care; Medication B is the approved alternative.","confirmed_by_user":false}]}
+{
+  "id": "policy-demo-001",
+  "name": "Fictional MED-A shortage response",
+  "rules": [
+    {
+      "id": "rule-001",
+      "policy_id": "policy-demo-001",
+      "medication_id": "med-a-iv",
+      "department_id": "dept-emergency",
+      "condition": "The fictional MED-A shortage flag is active and an eligible adult order is supplied.",
+      "restriction": "Restrict MED-A in the Emergency Department and display the approved MED-B alternative.",
+      "approved_alternative_id": "med-b-oral",
+      "effective_date": "2026-11-15",
+      "source_excerpt": "When the fictional MED-A shortage flag is active, Emergency Department orders use the approved MED-B alternative when eligible.",
+      "confirmed_by_user": false
+    }
+  ]
+}

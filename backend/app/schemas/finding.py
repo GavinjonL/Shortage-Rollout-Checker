@@ -1,6 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class Finding(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     id: str
     feature: str
     severity: str

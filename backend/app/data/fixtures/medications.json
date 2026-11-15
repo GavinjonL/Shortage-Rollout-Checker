@@ -1,0 +1,5 @@
+[
+  {"id":"med-a-iv","name":"MED-A","form":"fictional IV formulation"},
+  {"id":"med-b-oral","name":"MED-B","form":"fictional oral formulation"},
+  {"id":"med-c-reserve","name":"MED-C","form":"fictional reserve formulation"}
+]

@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { activityEntries, demoFindings, rolloutFindings } from "../data/demoData";
+import { fetchDemoData } from "../api/client";
 import type { ActivityEntry, CandidateRule, Finding, RolloutFinding } from "../types";
 
 const demoPolicyText = `Fictional shortage policy — MED-A IV
@@ -16,7 +17,7 @@ type NewActivity = Omit<ActivityEntry, "id" | "timestamp">;
 type DemoContextValue = {
   policyText: string; rules: CandidateRule[]; findings: Finding[]; rolloutFindings: RolloutFinding[]; activities: ActivityEntry[];
   confirmedRuleCount: number; isPolicyConfirmed: boolean;
-  loadDemoPolicy: () => void; createCandidateRules: () => void; setCandidateRules: (rules: CandidateRule[]) => void; updateRule: (id: string, updates: Partial<CandidateRule>) => void;
+  loadDemoPolicy: () => void; loadDemoData: () => Promise<void>; createCandidateRules: () => void; setCandidateRules: (rules: CandidateRule[]) => void; updateRule: (id: string, updates: Partial<CandidateRule>) => void;
   updateFindingStatus: (id: string, status: string) => void; recordActivity: (activity: NewActivity) => void; resetDemo: () => void;
 };
 
@@ -35,13 +36,22 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     setFindings((current) => current.map((finding) => finding.id === id ? { ...finding, review_status: status } : finding));
     setSharedRolloutFindings((current) => current.map((finding) => finding.id === id ? { ...finding, review_status: status } : finding));
   }, []);
+  const loadDemoData = useCallback(async () => {
+    const dataset = await fetchDemoData();
+    const sourceText = dataset.policy.rules.map((rule) => rule.source_excerpt).join("\n\n");
+    setPolicyText(sourceText);
+    setRules([]);
+    setFindings(demoFindings);
+    setSharedRolloutFindings(rolloutFindings);
+    setActivities([{ id: "ACT-DEMO-LOAD", timestamp: "Just now", actor: "Demo user", feature: "Foundation", action: "Loaded demo data", target: dataset.policy.id, detail: `${dataset.medications.length} fictional medications and ${dataset.departments.length} departments loaded.` }, ...activityEntries]);
+  }, []);
   const resetDemo = useCallback(() => { setPolicyText(""); setRules([]); setFindings(demoFindings); setSharedRolloutFindings(rolloutFindings); setActivities(activityEntries); }, []);
   const value = useMemo(() => ({
     policyText, rules, findings, rolloutFindings: sharedRolloutFindings, activities, confirmedRuleCount, isPolicyConfirmed,
-    loadDemoPolicy: () => { setPolicyText(demoPolicyText); setRules([]); }, createCandidateRules: () => setRules(candidateRuleDraft), setCandidateRules: setRules,
+    loadDemoPolicy: () => { setPolicyText(demoPolicyText); setRules([]); }, loadDemoData, createCandidateRules: () => setRules(candidateRuleDraft), setCandidateRules: setRules,
     updateRule: (id: string, updates: Partial<CandidateRule>) => setRules((current) => current.map((rule) => rule.id === id ? { ...rule, ...updates } : rule)),
     updateFindingStatus, recordActivity, resetDemo,
-  }), [policyText, rules, findings, sharedRolloutFindings, activities, confirmedRuleCount, isPolicyConfirmed, updateFindingStatus, recordActivity, resetDemo]);
+  }), [policyText, rules, findings, sharedRolloutFindings, activities, confirmedRuleCount, isPolicyConfirmed, updateFindingStatus, recordActivity, loadDemoData, resetDemo]);
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
 }
 

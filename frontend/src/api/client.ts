@@ -1,5 +1,22 @@
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
-export async function getDemoPolicy() { const response = await fetch(`${API_URL}/policies/demo`); return response.json(); }
+
+export type DemoDataset = {
+  policy: { id: string; name: string; rules: Array<{ source_excerpt: string }> };
+  medications: Array<{ id: string; name: string; form: string }>;
+  departments: Array<{ id: string; name: string }>;
+  configurations: Array<{ id: string }>;
+  test_cases: Array<{ id: string }>;
+  inventory: Array<{ medication_id: string }>;
+  alternatives: Array<{ source_medication_id: string; alternative_medication_id: string }>;
+  events: Array<{ id: string }>;
+  findings: Array<{ id: string }>;
+};
+
+export async function fetchDemoData(): Promise<DemoDataset> {
+  const response = await fetch(`${API_URL}/api/demo`);
+  if (!response.ok) throw new Error("Unable to load fictional demo data from the backend.");
+  return response.json() as Promise<DemoDataset>;
+}
 
 export type ExtractedPolicyRule = {
   medication_id: string | null;
