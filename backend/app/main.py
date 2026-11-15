@@ -14,7 +14,7 @@ from app.ai.client import AISettings
 
 app = FastAPI(title="Shortage Rollout Checker", version="0.1.0")
 allowed_origins = [origin.strip() for origin in os.getenv(
-    "FRONTEND_ORIGINS", "http://127.0.0.1:5173,http://localhost:5173"
+    "FRONTEND_ORIGINS", "http://127.0.0.1:5173,http://localhost:5173,http://127.0.0.1:5175,http://localhost:5175"
 ).split(",") if origin.strip()]
 app.add_middleware(
     CORSMiddleware,
@@ -38,7 +38,7 @@ def validate_live_ai_configuration() -> None:
     settings = AISettings.from_environment()
     if settings.provider != "mock" and not settings.api_key:
         key_name = "GROQ_API_KEY" if settings.provider == "groq" else "OPENAI_API_KEY"
-        raise RuntimeError(f"Live AI mode requires {key_name}. Configure the local root .env or set AI_PROVIDER=mock.")
+        raise RuntimeError(f"Live AI mode requires {key_name}. Configure backend/.env or set AI_PROVIDER=mock.")
 
 @app.get("/health")
 def health() -> dict[str, str]:

@@ -3,7 +3,7 @@ import { activityEntries, demoFindings, rolloutFindings } from "../data/demoData
 import { fetchDemoData, resetDemoData } from "../api/client";
 import type { ActivityEntry, CandidateRule, Finding, RolloutFinding } from "../types";
 
-const demoPolicyText = `Fictional shortage policy — MED-A IV
+const demoPolicyText = `Shortage policy — MED-A IV
 
 Effective 2026-11-15, MED-A is restricted at DEPT-GENERAL-WARD while inventory is below the pharmacy-defined shortage threshold. For eligible adult orders, MED-B is the approved alternative. MED-B must not be used when oral administration is contraindicated. Departmental order sets and dispensing-system instructions must display the current shortage guidance.`;
 
