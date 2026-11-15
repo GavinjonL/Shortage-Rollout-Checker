@@ -6,9 +6,9 @@ This checklist tracks the current Builder Plan against the repository as of Nove
 
 - [ ] **Sprint 1 — Project foundation and data contract:** most of the structure, fixtures, load action, health endpoint, and local setup are present. Finish the six-event fixture requirement, fully mirror shared types in the frontend, and make reset restore the backend fixture state.
 - [ ] **Sprint 2 — API key setup and policy intake:** policy extraction, source excerpts, error handling, and a mock extractor exist. Finish the safe AI connectivity check, tool schemas/dispatcher, editable policy input, backend confirmation flow, and a mock mode that completes the whole intake path.
-- [ ] **Sprint 3 — Rollout checker and evidence review:** the review UI, filters, local status actions, and seeded findings exist. Implement the deterministic backend comparison and connect the page to its resulting findings and evidence.
-- [ ] **Sprint 4 — Flight Simulator and Ripple Map:** the frontend presents three cases and an interactive ripple calculation. Implement validated backend evaluation, projection services, and shared-data integration.
-- [ ] **Sprint 5 — Shadow Mode:** the read-only UI and local review controls exist. Implement deterministic event comparison, grouping, and generated findings from the shared fixture data.
+- [ ] **Sprint 3 — Rollout checker and evidence review:** deterministic backend comparison and finding generation now exist, alongside the review UI and controls. Connect the UI to those shared backend findings and persist review decisions.
+- [ ] **Sprint 4 — Flight Simulator and Ripple Map:** the Flight Simulator now uses validated backend cases and deterministic results; the Ripple Map has a backend projection service. Connect the Ripple UI to shared backend projection data and finish approved-link enforcement and input validation.
+- [ ] **Sprint 5 — Shadow Mode:** a read-only backend event analyzer now detects repeated events, and the UI has local review controls. Add time-window-aware grouping and connect the page to shared backend events and findings.
 - [ ] **Sprint 6 — Integration, demo hardening, and presentation:** complete after the remaining P0 services are connected, the clean-reset walkthrough passes, and both live and mock flows work end to end.
 
 ## Product backlog
@@ -18,10 +18,10 @@ This checklist tracks the current Builder Plan against the repository as of Nove
 - [x] **A1 (P0):** Frontend/backend projects and local start instructions exist.
 - [x] **A2 (P0):** `.gitignore` covers environment files, caches, and build output.
 - [x] **A3 (P0):** `.env.example` contains provider/model placeholders and no credential.
-- [ ] **A4 (P0):** Define and mirror every shared schema, including `ShortagePolicy`, across frontend and backend. Backend coverage is largely present; frontend types and a named `ShortagePolicy` model remain incomplete.
-- [ ] **A5 (P0):** Complete the fictional seed scenario. It has two departments, three medications, an approved alternative, and a mismatch; add at least two more events to reach six.
-- [ ] **A6 (P0):** Make reset and Load demo data restore the same backend fixture state. Loading calls `GET /api/demo`; reset is still browser-local.
-- [ ] **A7 (P1):** Add CSV/JSON import with row-level validation errors.
+- [x] **A4 (P0):** Shared backend schemas are mirrored as frontend TypeScript contracts, including `ShortagePolicy`.
+- [x] **A5 (P0):** The fictional seed scenario has two departments, three medications, one approved alternative, one mismatch, and six mock events.
+- [x] **A6 (P0):** Load and reset use the same backend fixture state; reset restores the in-memory demo from committed fixtures.
+- [x] **A7 (P1):** CSV/JSON imports validate every row and return row-level field errors without partially applying invalid files.
 - [x] **A8 (P0):** Backend health endpoint and frontend-to-backend request configuration exist.
 
 ### Epic B — API key and model connection
@@ -49,8 +49,8 @@ This checklist tracks the current Builder Plan against the repository as of Nove
 ### Epic D — Rollout checker
 
 - [x] **D1 (P0):** Display mock configuration records by system, medication, and department.
-- [ ] **D2 (P0):** Implement deterministic backend comparisons of confirmed rules and configuration records.
-- [ ] **D3 (P0):** Generate mismatch findings through the deterministic checker. Current findings are seeded static data.
+- [x] **D2 (P0):** Deterministically compare confirmed rules with mock configuration records in the backend.
+- [x] **D3 (P0):** Generate mismatch findings with rule and source-record evidence through the deterministic checker.
 - [x] **D4 (P0):** Provide Rollout Review filters for department, system, and status.
 - [x] **D5 (P0):** Provide local review-status actions and optional notes.
 - [ ] **D6 (P1):** Export the reviewed checklist to CSV or a printable page.
@@ -58,27 +58,27 @@ This checklist tracks the current Builder Plan against the repository as of Nove
 ### Epic E — Shortage Flight Simulator
 
 - [x] **E1 (P0):** Provide three supplied sample cases.
-- [ ] **E2 (P0):** Validate each runnable case against the backend `TestCase` schema.
-- [ ] **E3 (P0):** Implement the deterministic backend evaluator.
+- [x] **E2 (P0):** Validate every runnable case with the backend `TestCase` schema; generated cases can be checked through `POST /api/simulator/validate`.
+- [x] **E3 (P0):** Implement the deterministic backend evaluator with explicit pass, possible-mismatch, and needs-clarification outcomes.
 - [x] **E4 (P0):** Show static demo results with expected/observed behavior and evidence.
 - [x] **E5 (P0):** Label simulations as supplied-data, review-only results.
-- [ ] **E6 (P1):** Support configuration changes and reruns.
+- [x] **E6 (P1):** Allow an in-memory mock-configuration edit and rerun without changing a live system.
 
 ### Epic F — Shortage Ripple Map
 
 - [ ] **F1 (P0):** Enforce approved-only alternative links in application code. The approved link is present in fixtures.
-- [x] **F2 (P0):** Calculate a transparent browser-side projection from supplied quantities and use rates.
-- [ ] **F3 (P0):** Validate missing, negative, and inconsistent inventory values comprehensively.
+- [x] **F2 (P0):** Calculate a transparent projection from supplied quantities and use rates in both the backend service and current browser demo.
+- [x] **F3 (P0):** Validate missing, negative, zero-use, and reserve-inconsistent inventory values before a backend projection is returned.
 - [x] **F4 (P0):** Display medication/location nodes and directional use shift.
 - [x] **F5 (P0):** Show formula, inputs, assumptions, and non-recommendation labeling.
 - [ ] **F6 (P1):** Compare two scenarios side by side.
 
 ### Epic G — Shadow Mode
 
-- [ ] **G1 (P0):** Load the event stream from the shared local fixture in the feature page. The UI currently uses its own static event list.
-- [ ] **G2 (P0):** Deterministically compare events with confirmed rules.
-- [ ] **G3 (P0):** Group repeated deviations by policy, department, event type, and time window.
-- [ ] **G4 (P0):** Generate evidence-backed grouped findings from the analyzer. Current pattern data is static.
+- [x] **G1 (P0):** Load the fictional event stream in the read-only backend analyzer. The feature page still needs to consume it.
+- [x] **G2 (P0):** Deterministically compare relevant allowed events with confirmed rules in the backend.
+- [ ] **G3 (P0):** Complete grouping by policy, department, event type, and explicit time window. Current backend grouping lacks a time-window dimension.
+- [ ] **G4 (P0):** Complete grouped findings with a time window and explicit reason, then render them in the feature page. Current backend findings have counts and evidence IDs but the UI remains static.
 - [x] **G5 (P0):** Provide a clearly read-only, review-only Shadow Mode page.
 - [x] **G6 (P0):** Provide local Expected, Dismissed, and Review policy controls with a note field.
 - [ ] **G7 (P1):** Allow a confirmed Shadow Mode finding to become a simulator case.
@@ -113,5 +113,5 @@ This checklist tracks the current Builder Plan against the repository as of Nove
 
 1. Finish remaining Sprint 1 fixture and shared-contract gaps: six events, frontend shared types, and backend-backed reset.
 2. Complete Sprint 2 safety/integration gaps: backend confirmation, tool dispatcher, safe connectivity check, and usable mock policy drafting.
-3. Build the deterministic rollout checker before connecting the simulator, Ripple Map, and Shadow Mode to the shared dataset.
+3. Connect the existing rollout, Ripple Map, and Shadow Mode backend services to their respective pages and the same confirmed policy state.
 4. Finish the end-to-end clean-reset rehearsal and presentation hardening only after every P0 feature uses the same evidence records.
