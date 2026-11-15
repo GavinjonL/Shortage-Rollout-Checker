@@ -2,6 +2,10 @@
 
 A fictional, review-only prototype for checking whether already-approved medication-shortage policies were implemented consistently. It does not provide treatment recommendations, use patient data, or modify hospital systems.
 
+## Verify the live workflow
+
+See [API and feature walkthrough](docs/api-verification.md) and [fresh sample policy](docs/sample-policy-api-test.txt) for exact inputs, expected contrasting results, and provider-call evidence. Rollout Review, Simulator, Ripple Map, and Shadow Mode use the current confirmed rules; their comparisons run in Python. Only policy extraction and an explicit AI connection check call the provider.
+
 ## AI policy extraction (Groq by default)
 
 The backend turns fictional policy text into an **unconfirmed draft**. Every extracted rule includes the original supporting excerpt, and a pharmacist must review and confirm it before any deterministic rollout, simulation, inventory, or Shadow Mode workflow can use it.
@@ -20,7 +24,7 @@ GROQ_API_KEY=your_key_here
 GROQ_MODEL=openai/gpt-oss-120b
 ```
 
-`AI_PROVIDER=mock` is an offline fallback. It returns an explicitly non-interpreted empty draft so local UI/API development still works without credentials. To switch providers later, set `AI_PROVIDER=openai` and configure `OPENAI_API_KEY` and `OPENAI_MODEL`; application services do not need to change.
+`AI_PROVIDER=mock` is an offline fallback. It returns an explicitly labeled synthetic draft for interface testing, with missing identifiers left blank so local UI/API development still works without credentials. To switch providers later, set `AI_PROVIDER=openai` and configure `OPENAI_API_KEY` and `OPENAI_MODEL`; application services do not need to change.
 
 ### 3. Install and start the backend
 

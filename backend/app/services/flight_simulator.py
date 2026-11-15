@@ -7,20 +7,27 @@ from app.schemas.scenario import ConfigurationOverride, SimulationResult, TestCa
 
 def run_sample_cases(rules: list[PolicyRule]) -> list[dict]:
     """Return concise deterministic cases for existing confirmed-policy callers."""
-    if not rules:
-        return []
-    rule = rules[0]
-    return [
-        {"id": "TC-001", "status": "Pass", "policy_rule_id": rule.id, "department_id": rule.department_id,
-         "scenario_text": "Fictional order includes the confirmed shortage condition.", "expected_behavior": rule.restriction,
-         "observed_behavior": "Mock order set displays the confirmed restriction.", "evidence_ids": [rule.id, "order-demo-001", "ehr-demo-001"]},
-        {"id": "TC-002", "status": "Possible mismatch", "policy_rule_id": rule.id, "department_id": rule.department_id,
-         "scenario_text": "Fictional order includes the confirmed shortage condition.", "expected_behavior": rule.restriction,
-         "observed_behavior": "Mock EHR record allows routine use.", "evidence_ids": [rule.id, "order-demo-002", "ehr-demo-001"]},
-        {"id": "TC-003", "status": "Needs clarification", "policy_rule_id": rule.id, "department_id": rule.department_id,
-         "scenario_text": "Fictional order omits the shortage-condition input.", "expected_behavior": "Do not infer policy applicability.",
-         "observed_behavior": "Required condition is missing from supplied data.", "evidence_ids": [rule.id, "order-demo-003"]},
-    ]
+    return [evaluate_test_case(case.test_case, rule, case.configuration).model_dump()
+            for case, rule in confirmed_simulation_cases(rules)]
+
+
+def confirmed_simulation_cases(rules: list[PolicyRule]):
+    from app.data.seed_demo import load_demo_data
+    from app.schemas.scenario import SimulationCaseDetail
+    from app.services.generated_cases import list_generated_cases
+    data = load_demo_data()
+    configurations = {c.id: c for c in data.configurations}
+    results = []
+    for rule in rules:
+        if not rule.confirmed_by_user or "restrict" not in rule.restriction.casefold():
+            continue
+        for template in [*data.test_cases, *list_generated_cases()]:
+            if template.medication_id != rule.medication_id or template.department_id != rule.department_id:
+                continue
+            case = template.model_copy(update={"id": template.id if template.source_rule_id == rule.id else f"{rule.id}--{template.id}", "source_rule_id": rule.id,
+                                               "policy_id": rule.policy_id, "expected_outcome": rule.restriction})
+            results.append((SimulationCaseDetail(test_case=case, configuration=configurations.get(case.configuration_id)), rule))
+    return results
 
 
 def evaluate_test_case(test_case: TestCase, rule: PolicyRule, configuration: SystemConfig | None, configuration_override: ConfigurationOverride | None = None) -> SimulationResult:

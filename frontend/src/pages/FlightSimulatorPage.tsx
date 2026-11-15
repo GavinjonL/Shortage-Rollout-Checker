@@ -9,7 +9,7 @@ function statusClass(status: string) { return status.toLowerCase().replace(/ /g,
 
 export function FlightSimulatorPage() {
   const { recordActivity } = useActivity();
-  const { isPolicyConfirmed } = useDemo();
+  const { isPolicyConfirmed, rules } = useDemo();
   const [cases, setCases] = useState<SimulatorCase[]>([]);
   const [selectedId, setSelectedId] = useState("");
   const [result, setResult] = useState<SimulationResult | null>(null);
@@ -20,12 +20,14 @@ export function FlightSimulatorPage() {
   const [showEvidence, setShowEvidence] = useState(false);
 
   useEffect(() => {
+    if (!isPolicyConfirmed) return;
+    setIsLoading(true); setResult(null);
     fetchSimulationCases().then((loadedCases) => {
       setCases(loadedCases);
       const first = loadedCases[0];
       if (first) { setSelectedId(first.test_case.id); setInstructionText(first.configuration?.instruction_text ?? ""); }
     }).catch((loadError: unknown) => setError(loadError instanceof Error ? loadError.message : "Unable to load simulation cases.")).finally(() => setIsLoading(false));
-  }, []);
+  }, [isPolicyConfirmed, rules]);
 
   const selected = cases.find((item) => item.test_case.id === selectedId) ?? cases[0];
   function selectCase(next: SimulatorCase) {
@@ -45,7 +47,7 @@ export function FlightSimulatorPage() {
   if (!isPolicyConfirmed) return <PolicyConfirmationGate feature="The Flight Simulator" />;
   if (isLoading) return <StatePanel kind="loading" title="Loading sample cases" message="Retrieving fictional, read-only simulation data." />;
   if (error) return <StatePanel kind="error" title="Simulation data unavailable" message={error} />;
-  if (!selected) return <StatePanel kind="empty" title="No sample cases available" message="Load or reset the fictional demo data, then try again." />;
+  if (!selected) return <StatePanel kind="empty" title="No matching sample cases" message="No supplied cases match this policy's medication and department. Try sample A or import matching fictional cases." />;
   return <section className="simulator-page" aria-labelledby="simulator-title">
     <div className="page-heading"><div><p className="eyebrow">Flight Simulator</p><h1 id="simulator-title">Test sample orders</h1><p className="page-intro">Compare demo orders with confirmed rules.</p></div><div className="simulation-label">Demo only</div></div>
     <div className="simulation-banner" role="note"><strong>Review-only result.</strong> These deterministic checks use supplied sample data and do not provide a clinical recommendation.</div>

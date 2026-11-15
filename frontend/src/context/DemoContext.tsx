@@ -1,63 +1,57 @@
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
-import { activityEntries, demoFindings, rolloutFindings } from "../data/demoData";
-import { fetchDemoData, resetDemoData } from "../api/client";
-import type { ActivityEntry, CandidateRule, Finding, RolloutFinding } from "../types";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { confirmPolicyRules, fetchDemoData, fetchRolloutFindings, resetDemoData } from "../api/client";
+import type { ActivityEntry, CandidateRule, Finding } from "../types";
 
-const demoPolicyText = `Shortage policy — MED-A IV
-
-Effective 2026-11-15, MED-A is restricted at DEPT-GENERAL-WARD while inventory is below the pharmacy-defined shortage threshold. For eligible adult orders, MED-B is the approved alternative. MED-B must not be used when oral administration is contraindicated. Departmental order sets and dispensing-system instructions must display the current shortage guidance.`;
-
-const candidateRuleDraft: CandidateRule[] = [
-  { id: "POL-001", title: "Use the approved oral alternative when eligible", condition: "IV acetaminophen stock is below the shortage threshold and oral administration is appropriate.", expectedBehavior: "Present the approved oral acetaminophen alternative for new adult orders.", sourceExcerpt: "New adult orders should use the approved oral acetaminophen alternative when the patient can take oral medication.", status: "Draft" },
-  { id: "POL-002", title: "Do not substitute when oral use is contraindicated", condition: "Oral administration is contraindicated.", expectedBehavior: "Do not present the oral alternative as a shortage substitution.", sourceExcerpt: "The alternative must not be used when oral administration is contraindicated.", status: "Draft" },
-  { id: "POL-003", title: "Keep rollout instructions current", condition: "The shortage policy is active.", expectedBehavior: "Order sets and dispensing-system instructions display current shortage guidance.", sourceExcerpt: "Departmental order sets and dispensing-system instructions must display current shortage guidance.", status: "Draft" },
-];
-
+const demoPolicyText = `Fictional test policy ZX-731.
+Effective 2026-11-15, restrict med-a-iv in dept-emergency while the shortage flag is active. For med-a-iv in dept-emergency, med-b-oral is the approved alternative when oral administration is eligible. Order sets must display the current restriction and shortage guidance.`;
 type NewActivity = Omit<ActivityEntry, "id" | "timestamp">;
 type DemoContextValue = {
-  policyText: string; rules: CandidateRule[]; findings: Finding[]; rolloutFindings: RolloutFinding[]; activities: ActivityEntry[];
-  confirmedRuleCount: number; isPolicyConfirmed: boolean;
-  loadDemoPolicy: () => void; setPolicyText: (text: string) => void; loadDemoData: () => Promise<void>; createCandidateRules: () => void; setCandidateRules: (rules: CandidateRule[]) => void; updateRule: (id: string, updates: Partial<CandidateRule>) => void;
-  updateFindingStatus: (id: string, status: string) => void; recordActivity: (activity: NewActivity) => void; resetDemo: () => Promise<void>;
+  policyText: string; rules: CandidateRule[]; findings: Finding[]; activities: ActivityEntry[];
+  findingsError: string; configurationCount: number | null; confirmedRuleCount: number; isPolicyConfirmed: boolean;
+  loadDemoPolicy: () => void; setPolicyText: (text: string) => void; loadDemoData: () => Promise<void>;
+  setCandidateRules: (rules: CandidateRule[]) => void; updateRule: (id: string, updates: Partial<CandidateRule>) => void;
+  recordActivity: (activity: NewActivity) => void; resetDemo: () => Promise<void>;
 };
-
 const DemoContext = createContext<DemoContextValue | undefined>(undefined);
-
 export function DemoProvider({ children }: { children: React.ReactNode }) {
+  const [configurationCount, setConfigurationCount] = useState<number | null>(null);
+  useEffect(() => { fetchDemoData().then(data => setConfigurationCount(data.configurations.length)).catch(() => setConfigurationCount(null)); }, []);
   const [policyText, setPolicyText] = useState("");
   const [rules, setRules] = useState<CandidateRule[]>([]);
-  const [findings, setFindings] = useState<Finding[]>(demoFindings);
-  const [sharedRolloutFindings, setSharedRolloutFindings] = useState<RolloutFinding[]>(rolloutFindings);
-  const [activities, setActivities] = useState<ActivityEntry[]>(activityEntries);
-  const confirmedRuleCount = rules.filter((rule) => rule.status === "Confirmed").length;
-  const isPolicyConfirmed = rules.length > 0 && confirmedRuleCount === rules.length;
-  const recordActivity = useCallback((activity: NewActivity) => setActivities((current) => [{ ...activity, id: `ACT-${current.length + 1}`, timestamp: "Just now" }, ...current]), []);
-  const updateFindingStatus = useCallback((id: string, status: string) => {
-    setFindings((current) => current.map((finding) => finding.id === id ? { ...finding, review_status: status } : finding));
-    setSharedRolloutFindings((current) => current.map((finding) => finding.id === id ? { ...finding, review_status: status } : finding));
-  }, []);
+  const [findingsError, setFindingsError] = useState("");
+  const [findings, setFindings] = useState<Finding[]>([]);
+  const [activities, setActivities] = useState<ActivityEntry[]>([]);
+  const confirmedRuleCount = rules.filter(rule => rule.status === "Confirmed").length;
+  const isPolicyConfirmed = confirmedRuleCount > 0 && rules.every(rule => rule.status !== "Draft");
+  useEffect(() => {
+    let active = true;
+    setFindings([]); setFindingsError("");
+    if (isPolicyConfirmed) fetchRolloutFindings().then(data => { if (active) setFindings(data.findings); }).catch(error => { if (active) setFindingsError(error instanceof Error ? error.message : "Unable to load findings."); });
+    return () => { active = false; };
+  }, [rules, isPolicyConfirmed]);
+  const recordActivity = useCallback((activity: NewActivity) => setActivities(current => [{ ...activity, id: crypto.randomUUID(), timestamp: new Date().toLocaleString() }, ...current]), []);
   const loadDemoData = useCallback(async () => {
     const dataset = await fetchDemoData();
-    const sourceText = dataset.policy.rules.map((rule) => rule.source_excerpt).join("\n\n");
-    setPolicyText(sourceText);
-    setRules([]);
-    setFindings(demoFindings);
-    setSharedRolloutFindings(rolloutFindings);
-    setActivities([{ id: "ACT-DEMO-LOAD", timestamp: "Just now", actor: "Demo user", feature: "Foundation", action: "Loaded demo data", target: dataset.policy.id, detail: `${dataset.medications.length} fictional medications and ${dataset.departments.length} departments loaded.` }, ...activityEntries]);
-  }, []);
+    await confirmPolicyRules([]);
+    setPolicyText(demoPolicyText); setConfigurationCount(dataset.configurations.length);
+    setRules([]); setFindings([]);
+    recordActivity({ actor: "Demo user", feature: "Foundation", action: "Loaded demo source data", target: dataset.policy.id, detail: `${dataset.medications.length} fictional medications and ${dataset.departments.length} departments. Extract and confirm a policy to generate findings.` });
+  }, [recordActivity]);
   const resetDemo = useCallback(async () => {
-    await resetDemoData();
-    setPolicyText(""); setRules([]); setFindings(demoFindings); setSharedRolloutFindings(rolloutFindings); setActivities(activityEntries);
+    const dataset = await resetDemoData();
+    setConfigurationCount(dataset.configurations.length);
+    setPolicyText(""); setRules([]); setFindings([]); setActivities([]);
   }, []);
   const value = useMemo(() => ({
-    policyText, rules, findings, rolloutFindings: sharedRolloutFindings, activities, confirmedRuleCount, isPolicyConfirmed,
-    loadDemoPolicy: () => { setPolicyText(demoPolicyText); setRules([]); }, setPolicyText, loadDemoData, createCandidateRules: () => setRules(candidateRuleDraft), setCandidateRules: setRules,
-    updateRule: (id: string, updates: Partial<CandidateRule>) => setRules((current) => current.map((rule) => rule.id === id ? { ...rule, ...updates } : rule)),
-    updateFindingStatus, recordActivity, resetDemo,
-  }), [policyText, rules, findings, sharedRolloutFindings, activities, confirmedRuleCount, isPolicyConfirmed, updateFindingStatus, recordActivity, loadDemoData, resetDemo]);
+    policyText, rules, findings, findingsError, activities, configurationCount, confirmedRuleCount, isPolicyConfirmed,
+    loadDemoPolicy: () => { setPolicyText(demoPolicyText); setRules([]); },
+    setPolicyText: (text: string) => { setPolicyText(text); setRules([]); }, loadDemoData,
+    setCandidateRules: setRules,
+    updateRule: (id: string, updates: Partial<CandidateRule>) => setRules(current => current.map(rule => rule.id === id ? { ...rule, ...updates } : rule)),
+    recordActivity, resetDemo,
+  }), [policyText, rules, findings, findingsError, activities, configurationCount, confirmedRuleCount, isPolicyConfirmed, recordActivity, loadDemoData, resetDemo]);
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;
 }
-
 export function useDemo() {
   const context = useContext(DemoContext);
   if (!context) throw new Error("useDemo must be used inside DemoProvider.");

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Query
-from app.data.seed_demo import load_demo_data
+from app.services.policy_store import confirmed_dataset as load_demo_data
 from app.schemas.finding import CreateTestCaseRequest, FindingReviewRequest
 from app.schemas.scenario import TestCase
 from app.services.generated_cases import add_generated_case

@@ -52,7 +52,7 @@ class PolicyDraft(BaseModel):
 
 class ConfirmedPolicyRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    rules: list[PolicyRule] = Field(min_length=1)
+    rules: list[PolicyRule] = Field(default_factory=list)
 
 
 class PolicyRuleReviewRequest(BaseModel):

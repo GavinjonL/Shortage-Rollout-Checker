@@ -1,5 +1,6 @@
 """Provider-isolated, draft-only AI policy extraction."""
 
+import hashlib
 import json
 import os
 import re
@@ -7,6 +8,7 @@ from dataclasses import dataclass
 from typing import Any, Protocol
 
 from dotenv import load_dotenv
+from pathlib import Path
 from openai import APIConnectionError, APIStatusError, APITimeoutError, AuthenticationError, NotFoundError, OpenAI, RateLimitError
 from pydantic import ValidationError
 
@@ -39,7 +41,8 @@ class AISettings:
     @classmethod
     def from_environment(cls) -> "AISettings":
         # Load local defaults but allow explicit process configuration to win.
-        load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
+        load_dotenv(Path(__file__).resolve().parents[2] / ".env")
+        load_dotenv(Path(__file__).resolve().parents[3] / ".env")
         provider = os.getenv("AI_PROVIDER", "groq").strip().lower()
         if provider == "groq":
             return cls(provider, os.getenv("GROQ_API_KEY"), os.getenv("GROQ_MODEL", "openai/gpt-oss-120b"), GROQ_BASE_URL)
@@ -138,7 +141,7 @@ class OpenAICompatiblePolicyExtractor:
             parsed = json.loads(content)
             draft = PolicyDraft.model_validate({"policy_id": policy_id, **parsed})
             result = _validate_evidence(draft, policy_text)
-            finish_call("policy_extraction", started, "success")
+            finish_call("policy_extraction", started, "success", provider=self.settings.provider, model=self.settings.model, provider_response_id=getattr(response, "id", None), input_sha256=hashlib.sha256(policy_text.encode()).hexdigest())
             return result
         except PolicyExtractionError:
             finish_call("policy_extraction", started, "error")
@@ -172,9 +175,9 @@ class MockPolicyExtractor:
         excerpt = next((line.strip() for line in policy_text.splitlines() if line.strip()), policy_text.strip())
         return PolicyDraft(
             policy_id=policy_id,
-            rules=[DraftPolicyRule(medication_id=medications[0] if medications else "med-a-iv", department_id=departments[0] if departments else "dept-emergency",
-                condition="Mock mode — verify the policy condition", restriction="Restrict use", approved_alternative_id=medications[1] if len(medications) > 1 else "med-b-oral",
-                effective_date=dates[0] if dates else "2026-11-15", source_excerpt=excerpt, confirmed_by_user=False)],
+            rules=[DraftPolicyRule(medication_id=medications[0] if medications else None, department_id=departments[0] if departments else None,
+                condition="Mock mode — verify the policy condition", restriction="Restrict use", approved_alternative_id=medications[1] if len(medications) > 1 else None,
+                effective_date=dates[0] if dates else None, source_excerpt=excerpt, confirmed_by_user=False)],
             ambiguities=["Mock AI mode produced a deterministic fictional draft; pharmacist review is required."],
         )
 

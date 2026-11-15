@@ -33,10 +33,11 @@ def test_configuration_override_can_resolve_a_mock_mismatch() -> None:
 
 def test_simulator_endpoints_list_validated_cases_and_run_them() -> None:
     client = TestClient(app)
+    client.put("/api/policies/confirmed", json={"rules": [r.model_dump() for r in load_demo_data().policy.rules]})
     cases = client.get("/api/simulator/cases")
     assert cases.status_code == 200
     assert len(cases.json()) == 3
 
-    result = client.post("/api/simulator/cases/test-001/run", json={"configuration_override": None})
+    result = client.post(f"/api/simulator/cases/{cases.json()[0]['test_case']['id']}/run", json={"configuration_override": None})
     assert result.status_code == 200
     assert result.json()["status"] == "Pass"

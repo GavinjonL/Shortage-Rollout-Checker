@@ -4,6 +4,7 @@ import csv
 import json
 from io import StringIO
 from typing import Any, Literal
+from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, ConfigDict, ValidationError
@@ -17,6 +18,13 @@ from app.schemas.scenario import TestCase
 router = APIRouter(prefix="/api/demo", tags=["demo"])
 
 
+@router.get("/policy-samples")
+def policy_samples() -> dict:
+    """Source text and baseline expectations only; never supplies generated review results."""
+    source = Path(__file__).resolve().parents[1] / "data" / "fixtures" / "policy_samples.json"
+    return {"samples": json.loads(source.read_text(encoding="utf-8"))}
+
+
 @router.get("", response_model=DemoDataset)
 def get_demo_data() -> DemoDataset:
     return load_demo_data()
@@ -25,6 +33,10 @@ def get_demo_data() -> DemoDataset:
 @router.post("/reset", response_model=DemoDataset)
 def reset_demo() -> DemoDataset:
     """Restore the active fictional demo data from committed local fixtures."""
+    from app.services.policy_store import replace_confirmed_rules
+    from app.services.generated_cases import clear_generated_cases
+    replace_confirmed_rules([])
+    clear_generated_cases()
     return reset_demo_data()
 
 

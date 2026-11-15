@@ -1,0 +1,2 @@
+Fictional comparison policy B
+Effective 2026-11-15, while the fictional shortage flag is active, restrict med-c-reserve in dept-infusion. No alternative is approved by this test policy.

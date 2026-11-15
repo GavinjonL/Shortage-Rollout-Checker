@@ -25,6 +25,7 @@ def extract_policy(
     extractor: Annotated[PolicyExtractor, Depends(policy_extractor_dependency)],
 ) -> PolicyDraft:
     """Create an unconfirmed, evidence-linked draft from fictional policy text."""
+    replace_confirmed_rules([])
     try:
         return extractor.extract(request.policy_text, request.policy_id)
     except PolicyExtractionError as exc:

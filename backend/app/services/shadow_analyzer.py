@@ -4,11 +4,11 @@ from datetime import datetime, timedelta, timezone
 from app.schemas.demo import DemoDataset
 
 def analyze_events(dataset: DemoDataset, window_hours: int = 24) -> dict:
-    rules = [r for r in dataset.policy.rules if r.confirmed_by_user]
+    rules = [r for r in dataset.policy.rules if r.confirmed_by_user and "restrict" in r.restriction.casefold()]
     groups = defaultdict(list); rule_by_id = {r.id: r for r in rules}
     for event in dataset.events:
         for rule in rules:
-            if event.medication_id != rule.medication_id or event.result != "allowed": continue
+            if event.medication_id != rule.medication_id or event.department_id != rule.department_id or event.result != "allowed": continue
             stamp = datetime.fromisoformat(event.timestamp.replace("Z", "+00:00")).astimezone(timezone.utc)
             start = datetime.fromtimestamp(int(stamp.timestamp()) - int(stamp.timestamp()) % (window_hours * 3600), tz=timezone.utc)
             groups[(rule.id, event.department_id, event.event_type, start)].append(event)

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "comparison-a",
+    "name": "Sample A: Emergency shortage with alternative",
+    "description": "Exercises the stale EHR instruction, supplied order cases, alternative inventory and repeated events.",
+    "policy_text": "Fictional comparison policy A\nEffective 2026-11-15, while the fictional shortage flag is active, restrict med-a-iv in dept-emergency and display med-b-oral as its explicitly approved alternative only when oral administration is eligible.\n",
+    "expected_results": {
+      "Rollout Review": "1 possible mismatch (ehr-demo-001); the cabinet contains restriction wording.",
+      "Flight Simulator": "3 baseline cases: Pass, Possible mismatch, and Needs clarification.",
+      "Ripple Map": "At 30% shift: 13 units/day and 4.6 days above reserve for med-b-oral.",
+      "Shadow Mode": "1 repeated-event finding for med-a-iv in dept-emergency."
+    }
+  },
+  {
+    "id": "comparison-b",
+    "name": "Sample B: Infusion reserve without alternative",
+    "description": "Exercises incomplete pump evidence and explicit empty states for unsupported downstream workflows.",
+    "policy_text": "Fictional comparison policy B\nEffective 2026-11-15, while the fictional shortage flag is active, restrict med-c-reserve in dept-infusion. No alternative is approved by this test policy.\n",
+    "expected_results": {
+      "Rollout Review": "0 mismatch findings; pump-demo-001 needs clarification because its instruction is generic.",
+      "Flight Simulator": "No matching sample cases for this medication and department.",
+      "Ripple Map": "No projection: this policy has no approved alternative.",
+      "Shadow Mode": "No repeated-event findings match this policy."
+    }
+  }
+]

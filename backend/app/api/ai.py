@@ -15,3 +15,12 @@ def check_ai() -> dict:
         return {"ok": True, "provider": settings.provider, "model": settings.model}
     except PolicyExtractionError as exc:
         raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+
+
+@router.get("/status")
+def ai_status() -> dict:
+    from app.services.audit_log import model_call_log
+    settings = AISettings.from_environment()
+    return {"provider": settings.provider, "model": settings.model,
+            "mode": "offline" if settings.provider == "mock" else "live",
+            "key_configured": bool(settings.api_key), "calls": model_call_log()}

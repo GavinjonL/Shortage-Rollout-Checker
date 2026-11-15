@@ -22,6 +22,7 @@ def test_shadow_groups_repeated_events_in_a_time_window() -> None:
 
 def test_shadow_review_and_confirmed_follow_up_case() -> None:
     client = TestClient(app)
+    client.put("/api/policies/confirmed", json={"rules": [r.model_dump() for r in load_demo_data().policy.rules]})
     finding = client.get("/api/shadow/findings").json()["findings"][0]
     assert client.put(f"/api/shadow/findings/{finding['id']}/review", json={"status": "Review policy", "note": "Demo review"}).status_code == 200
     created = client.post(f"/api/shadow/findings/{finding['id']}/create-test-case", json={"confirmed": True})

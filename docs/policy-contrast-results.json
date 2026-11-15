@@ -1,0 +1,195 @@
+[
+  {
+    "simulator_statuses": [
+      "Pass",
+      "Possible mismatch",
+      "Needs clarification"
+    ],
+    "ripple": {
+      "projection": {
+        "policy_rule_id": "contrast-A-rule",
+        "source_medication_id": "med-a-iv",
+        "alternative_medication_id": "med-b-oral",
+        "location_id": "dept-emergency",
+        "shift_percent": 30,
+        "baseline_daily_use": 10.0,
+        "projected_daily_use": 13.0,
+        "quantity_on_hand": 80.0,
+        "minimum_reserve": 20.0,
+        "usable_supply": 60.0,
+        "days_above_reserve": 4.615384615384615,
+        "formula": "(quantity_on_hand - minimum_reserve) / projected_daily_use",
+        "assumptions": [
+          "Fictional inventory",
+          "Pharmacist-approved alternative link",
+          "Simulation only \u2014 not a clinical recommendation"
+        ]
+      },
+      "reason": null
+    },
+    "shadow_finding_count": 1,
+    "sample": "A",
+    "draft": {
+      "policy_id": "contrast-A",
+      "rules": [
+        {
+          "medication_id": "med-a-iv",
+          "department_id": "dept-emergency",
+          "condition": "while the fictional shortage flag is active",
+          "restriction": "restrict",
+          "approved_alternative_id": "med-b-oral",
+          "effective_date": "2026-11-15",
+          "source_excerpt": "restrict med-a-iv in dept-emergency and display med-b-oral as its explicitly approved alternative only when oral administration is eligible.",
+          "confirmed_by_user": false
+        }
+      ],
+      "ambiguities": [
+        "Unclear whether the condition \"only when oral administration is eligible\" applies to the restriction or the display of the alternative."
+      ],
+      "is_draft": true
+    },
+    "findings": [
+      {
+        "id": "ROL-contrast-A-rule-config-001",
+        "feature": "Rollout Review",
+        "severity": "High",
+        "summary": "EHR_ORDER_SET configuration may not reflect confirmed restriction for med-a-iv.",
+        "evidence_ids": [
+          "contrast-A-rule",
+          "ehr-demo-001"
+        ],
+        "assumptions": [
+          "Fictional configuration record",
+          "Confirmed policy rule",
+          "Limited instruction text comparison"
+        ],
+        "review_status": "Needs review",
+        "created_at": "2026-11-15T08:59:10.926871+00:00",
+        "policy_rule_id": "contrast-A-rule",
+        "source_record_id": "ehr-demo-001",
+        "department_id": "dept-emergency",
+        "system_type": "ehr_order_set",
+        "instruction_text": "MED-A is available for routine use.",
+        "source_excerpt": "restrict med-a-iv in dept-emergency and display med-b-oral as its explicitly approved alternative only when oral administration is eligible.",
+        "restriction": "restrict",
+        "condition": "while the fictional shortage flag is active",
+        "reason": "The confirmed rule restricts use, but this enabled record still says routine use or available."
+      }
+    ],
+    "rule_reviews": [
+      {
+        "rule": {
+          "id": "contrast-A-rule",
+          "policy_id": "contrast-A",
+          "medication_id": "med-a-iv",
+          "department_id": "dept-emergency",
+          "condition": "while the fictional shortage flag is active",
+          "restriction": "restrict",
+          "approved_alternative_id": "med-b-oral",
+          "effective_date": "2026-11-15",
+          "source_excerpt": "restrict med-a-iv in dept-emergency and display med-b-oral as its explicitly approved alternative only when oral administration is eligible.",
+          "confirmed_by_user": true
+        },
+        "records": [
+          {
+            "configuration_id": "config-001",
+            "source_record_id": "ehr-demo-001",
+            "system_type": "ehr_order_set",
+            "instruction_text": "MED-A is available for routine use.",
+            "outcome": "Possible mismatch",
+            "reason": "The confirmed rule restricts use, but this enabled record still says routine use or available."
+          },
+          {
+            "configuration_id": "config-002",
+            "source_record_id": "adc-demo-001",
+            "system_type": "dispensing_cabinet",
+            "instruction_text": "MED-A restricted; display current shortage guidance and approved alternative.",
+            "outcome": "Restriction wording present",
+            "reason": "The instruction contains restriction wording. Conditions, dates, and alternatives still require manual review."
+          }
+        ],
+        "outcome": "Possible mismatch",
+        "reason": "Every matching record is listed below. These text checks do not evaluate the full policy meaning."
+      }
+    ],
+    "policy_fingerprint": "e3a407e53bf5a7a8252984950c1ab36ae20e39cc0079fc2d74199032584b4cca",
+    "provider_call": {
+      "completed_at": "2026-11-15T08:59:10.925860+00:00",
+      "purpose": "policy_extraction",
+      "duration_ms": 2234,
+      "status": "success",
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "provider_response_id": "resp_01m7f6x4hyeggbs37n11hz6bch",
+      "input_sha256": "4a5e3ffd67d5e1e1b223e21932989ccd3ea7f63f0ae2a20b45ecbaa1efb0305c"
+    }
+  },
+  {
+    "simulator_statuses": [],
+    "ripple": {
+      "projection": null,
+      "reason": "No confirmed rule names an approved alternative."
+    },
+    "shadow_finding_count": 0,
+    "sample": "B",
+    "draft": {
+      "policy_id": "contrast-B",
+      "rules": [
+        {
+          "medication_id": "med-c-reserve",
+          "department_id": "dept-infusion",
+          "condition": "while the fictional shortage flag is active",
+          "restriction": "restrict",
+          "approved_alternative_id": null,
+          "effective_date": "2026-11-15",
+          "source_excerpt": "restrict med-c-reserve in dept-infusion",
+          "confirmed_by_user": false
+        }
+      ],
+      "ambiguities": [
+        "Definition of \"fictional shortage flag\" not specified"
+      ],
+      "is_draft": true
+    },
+    "findings": [],
+    "rule_reviews": [
+      {
+        "rule": {
+          "id": "contrast-B-rule",
+          "policy_id": "contrast-B",
+          "medication_id": "med-c-reserve",
+          "department_id": "dept-infusion",
+          "condition": "while the fictional shortage flag is active",
+          "restriction": "restrict",
+          "approved_alternative_id": null,
+          "effective_date": "2026-11-15",
+          "source_excerpt": "restrict med-c-reserve in dept-infusion",
+          "confirmed_by_user": true
+        },
+        "records": [
+          {
+            "configuration_id": "config-003",
+            "source_record_id": "pump-demo-001",
+            "system_type": "smart_pump_library",
+            "instruction_text": "Fictional reserve medication guidance is current.",
+            "outcome": "Needs clarification",
+            "reason": "The record is disabled or lacks explicit restriction wording. This checker cannot establish whether it implements the rule."
+          }
+        ],
+        "outcome": "Needs clarification",
+        "reason": "Every matching record is listed below. These text checks do not evaluate the full policy meaning."
+      }
+    ],
+    "policy_fingerprint": "5b9374b375fb3f94509789145e33ab601867237de64cd86b3a3886c6a799a042",
+    "provider_call": {
+      "completed_at": "2026-11-15T08:59:12.047983+00:00",
+      "purpose": "policy_extraction",
+      "duration_ms": 1125,
+      "status": "success",
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "provider_response_id": "resp_01m7f6x5pwewwsf2ddseq7gsx9",
+      "input_sha256": "978a7482d2d3799229a3a09a014bdac0c2923bceedb850d83f59c4701801f3ce"
+    }
+  }
+]

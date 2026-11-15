@@ -4,6 +4,13 @@ const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
 export type { DemoDataset } from "../types";
 
+export type PolicySample = { id: string; name: string; description: string; policy_text: string; expected_results: Record<string, string> };
+export async function fetchPolicySamples(): Promise<PolicySample[]> {
+  const response = await fetch(`${API_URL}/api/demo/policy-samples`);
+  if (!response.ok) throw new Error("Unable to load sample policies. Check that the updated backend is running.");
+  return (await response.json()).samples;
+}
+
 export async function fetchDemoData(): Promise<DemoDataset> {
   const response = await fetch(`${API_URL}/api/demo`);
   if (!response.ok) throw new Error("Unable to load fictional demo data from the backend.");
@@ -113,4 +120,19 @@ export async function fetchPolicyHistory(): Promise<{ versions: Array<{ version:
   const response = await fetch(`${API_URL}/api/policies/history`);
   if (!response.ok) throw new Error("Unable to load policy revision history.");
   return response.json() as Promise<{ versions: Array<{ version: number; rules: PolicyRuleReview[] }> }>;
+}
+
+export type RolloutRuleReview = {
+  rule: PolicyRule; outcome: string; reason: string;
+  records: Array<{ configuration_id: string; source_record_id: string; system_type: string; instruction_text: string; outcome: string; reason: string }>;
+};
+export async function fetchRolloutFindings() {
+  const response = await fetch(`${API_URL}/api/rollout/findings`);
+  if (!response.ok) throw new Error("Unable to load rollout findings from the backend.");
+  return response.json() as Promise<{ findings: Array<import("../types").Finding & { department_id: string; system_type: string; policy_rule_id: string; source_record_id: string; instruction_text: string }>; configurations: import("../types").SystemConfig[]; coverage_notes: string[]; rule_reviews: RolloutRuleReview[]; confirmed_rule_count: number; policy_fingerprint: string }>;
+}
+export async function fetchAIStatus() {
+  const response = await fetch(`${API_URL}/api/ai/status`);
+  if (!response.ok) throw new Error("Unable to load AI connection status.");
+  return response.json() as Promise<{ provider: string; model: string; mode: string; key_configured: boolean; calls: Array<{ completed_at: string; purpose: string; status: string; duration_ms: number }> }>;
 }

@@ -1,0 +1,2 @@
+Fictional comparison policy A
+Effective 2026-11-15, while the fictional shortage flag is active, restrict med-a-iv in dept-emergency and display med-b-oral as its explicitly approved alternative only when oral administration is eligible.

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query
-from app.data.seed_demo import load_demo_data
+from app.services.policy_store import confirmed_dataset as load_demo_data
 from app.services.ripple_engine import build_projection
 router = APIRouter(prefix="/api/ripple", tags=["ripple"])
 @router.get("/projection")
