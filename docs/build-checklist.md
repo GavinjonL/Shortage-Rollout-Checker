@@ -53,7 +53,7 @@ This checklist tracks the current Builder Plan against the repository as of Nove
 - [x] **D3 (P0):** Generate mismatch findings with rule and source-record evidence through the deterministic checker.
 - [x] **D4 (P0):** Provide Rollout Review filters for department, system, and status.
 - [x] **D5 (P0):** Provide local review-status actions and optional notes.
-- [ ] **D6 (P1):** Export the reviewed checklist to CSV or a printable page.
+- [x] **D6 (P1):** Export the reviewed checklist to CSV and provide a printable checklist view.
 
 ### Epic E — Shortage Flight Simulator
 
