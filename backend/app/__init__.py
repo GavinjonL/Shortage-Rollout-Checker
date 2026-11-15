@@ -1,1 +1,1 @@
-"""Shortage Rollout Checker API package."""
+"""MedSync API package."""

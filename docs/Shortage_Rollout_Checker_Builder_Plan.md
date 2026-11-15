@@ -1,14 +1,14 @@
-# Shortage Rollout Checker — Builder Plan
+# MedSync — Builder Plan
 
 **Plan date:** November 14, 2026  
 **Plan audience:** Hackathon builders  
-**Working product name:** Shortage Rollout Checker  
+**Working product name:** MedSync
 **Product form:** Browser-based web app  
 **Hackathon mode:** Fictional data; no special hardware or live hospital connection
 
 ## 1. Product summary
 
-Shortage Rollout Checker helps hospital pharmacy teams test and verify how an already-approved medication-shortage policy is applied across a hospital’s systems. It combines four features:
+MedSync helps hospital pharmacy teams test and verify how an already-approved medication-shortage policy is applied across a hospital’s systems. It combines four features:
 
 1. **Policy Rollout Checker:** maps a confirmed policy to potentially affected systems and flags inconsistencies.
 2. **Shortage Flight Simulator:** tests sample orders against the policy before rollout.

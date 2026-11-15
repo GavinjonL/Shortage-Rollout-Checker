@@ -1,4 +1,4 @@
-# Shortage Rollout Checker
+# MedSync
 
 A fictional, review-only prototype for checking whether already-approved medication-shortage policies were implemented consistently. It does not provide treatment recommendations, use patient data, or modify hospital systems.
 
