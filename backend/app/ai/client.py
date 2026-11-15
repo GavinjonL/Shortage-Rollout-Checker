@@ -38,7 +38,7 @@ class AISettings:
 
     @classmethod
     def from_environment(cls) -> "AISettings":
-        load_dotenv()
+        load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
         provider = os.getenv("AI_PROVIDER", "groq").strip().lower()
         if provider == "groq":
             return cls(provider, os.getenv("GROQ_API_KEY"), os.getenv("GROQ_MODEL", "openai/gpt-oss-120b"), GROQ_BASE_URL)
@@ -125,15 +125,13 @@ class OpenAICompatiblePolicyExtractor:
     def extract(self, policy_text: str, policy_id: str) -> PolicyDraft:
         started = begin_call("policy_extraction")
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.responses.create(
                 model=self.settings.model,
-                messages=[
-                    {"role": "system", "content": POLICY_DRAFTING_SYSTEM_PROMPT},
-                    {"role": "user", "content": f"Extract a draft from this fictional policy:\n\n{policy_text}"},
-                ],
-                response_format={"type": "json_schema", "json_schema": {"name": "policy_draft", "strict": True, "schema": _model_schema()}},
+                instructions=POLICY_DRAFTING_SYSTEM_PROMPT,
+                input=f"Extract a draft from this fictional policy:\n\n{policy_text}",
+                text={"format": {"type": "json_schema", "name": "policy_draft", "strict": True, "schema": _model_schema()}},
             )
-            content = response.choices[0].message.content if response.choices else None
+            content = response.output_text
             if not content:
                 raise PolicyExtractionError("The AI provider returned no draft content.", 502)
             parsed = json.loads(content)
@@ -167,10 +165,16 @@ class OpenAICompatiblePolicyExtractor:
 class MockPolicyExtractor:
     """Offline, intentionally conservative mode for demos without an API key."""
     def extract(self, policy_text: str, policy_id: str) -> PolicyDraft:
+        medications = re.findall(r"\b(?:MED-[A-Za-z0-9]+|med-[a-z0-9-]+)\b", policy_text)
+        departments = re.findall(r"\b(?:DEPT-[A-Za-z0-9-]+|dept-[a-z0-9-]+)\b", policy_text)
+        dates = re.findall(r"\b\d{4}-\d{2}-\d{2}\b", policy_text)
+        excerpt = next((line.strip() for line in policy_text.splitlines() if line.strip()), policy_text.strip())
         return PolicyDraft(
             policy_id=policy_id,
-            rules=[],
-            ambiguities=["Mock mode does not interpret policies. Configure Groq or OpenAI to create a draft."],
+            rules=[DraftPolicyRule(medication_id=medications[0] if medications else "med-a-iv", department_id=departments[0] if departments else "dept-emergency",
+                condition="Mock mode — verify the policy condition", restriction="Restrict use", approved_alternative_id=medications[1] if len(medications) > 1 else "med-b-oral",
+                effective_date=dates[0] if dates else "2026-11-15", source_excerpt=excerpt, confirmed_by_user=False)],
+            ambiguities=["Mock AI mode produced a deterministic fictional draft; pharmacist review is required."],
         )
 
 

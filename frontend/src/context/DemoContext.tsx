@@ -17,7 +17,7 @@ type NewActivity = Omit<ActivityEntry, "id" | "timestamp">;
 type DemoContextValue = {
   policyText: string; rules: CandidateRule[]; findings: Finding[]; rolloutFindings: RolloutFinding[]; activities: ActivityEntry[];
   confirmedRuleCount: number; isPolicyConfirmed: boolean;
-  loadDemoPolicy: () => void; loadDemoData: () => Promise<void>; createCandidateRules: () => void; setCandidateRules: (rules: CandidateRule[]) => void; updateRule: (id: string, updates: Partial<CandidateRule>) => void;
+  loadDemoPolicy: () => void; setPolicyText: (text: string) => void; loadDemoData: () => Promise<void>; createCandidateRules: () => void; setCandidateRules: (rules: CandidateRule[]) => void; updateRule: (id: string, updates: Partial<CandidateRule>) => void;
   updateFindingStatus: (id: string, status: string) => void; recordActivity: (activity: NewActivity) => void; resetDemo: () => Promise<void>;
 };
 
@@ -51,7 +51,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
   }, []);
   const value = useMemo(() => ({
     policyText, rules, findings, rolloutFindings: sharedRolloutFindings, activities, confirmedRuleCount, isPolicyConfirmed,
-    loadDemoPolicy: () => { setPolicyText(demoPolicyText); setRules([]); }, loadDemoData, createCandidateRules: () => setRules(candidateRuleDraft), setCandidateRules: setRules,
+    loadDemoPolicy: () => { setPolicyText(demoPolicyText); setRules([]); }, setPolicyText, loadDemoData, createCandidateRules: () => setRules(candidateRuleDraft), setCandidateRules: setRules,
     updateRule: (id: string, updates: Partial<CandidateRule>) => setRules((current) => current.map((rule) => rule.id === id ? { ...rule, ...updates } : rule)),
     updateFindingStatus, recordActivity, resetDemo,
   }), [policyText, rules, findings, sharedRolloutFindings, activities, confirmedRuleCount, isPolicyConfirmed, updateFindingStatus, recordActivity, loadDemoData, resetDemo]);

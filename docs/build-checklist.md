@@ -26,25 +26,25 @@ This checklist tracks the current Builder Plan against the repository as of Nove
 
 ### Epic B — API key and model connection
 
-- [ ] **B1 (P0):** Document the backend-local `.env` location precisely and consistently. Current instructions use a root `.env`.
-- [ ] **B2 (P0):** Add explicit live-mode startup validation for OpenAI settings. Current validation occurs when extraction is requested and also supports Groq.
-- [ ] **B3 (P0):** Add a safe backend AI connectivity-check endpoint.
+- [x] **B1 (P0):** Backend-local `backend/.env` and `backend/.env.example` are documented consistently and ignored by Git.
+- [x] **B2 (P0):** Live Groq/OpenAI mode validates required credentials at startup; mock mode remains available without credentials.
+- [x] **B3 (P0):** Safe backend-only `POST /api/ai/check` endpoint added; it returns provider/model status without credentials.
 - [x] **B4 (P0):** Keep API keys server-side; no frontend key usage is present.
 - [x] **B5 (P0):** Return readable errors for missing keys, auth, rate limits, timeouts, network, model, and malformed-output failures.
-- [ ] **B6 (P0):** Make mock-AI mode complete the full policy-intake demo. Current mock mode intentionally returns no rules.
-- [ ] **B7 (P1):** Add a privacy-safe model-call status log.
-- [ ] **B8 (P0):** Define strict schemas for the read-only AI function tools.
-- [ ] **B9 (P0):** Implement the allowlisted, validated backend tool dispatcher.
+- [x] **B6 (P0):** Mock-AI mode returns a labeled, confirmable deterministic fictional draft for the policy-intake demo.
+- [x] **B7 (P1):** Privacy-safe model-call log records purpose, duration, and status only.
+- [x] **B8 (P0):** Strict schemas cover the implemented read-only policy, configuration, test-case, simulation, inventory, ripple, and event tools.
+- [x] **B9 (P0):** Allowlisted dispatcher rejects unknown, write-capable, and unexpected-argument tool requests.
 
 ### Epic C — Policy intake and confirmation
 
-- [ ] **C1 (P0):** Allow users to paste fictional approved policy text. The current policy text field is read-only.
-- [ ] **C2 (P0):** Use the planned Responses API structured-output call. Current extraction uses an OpenAI-compatible chat-completions API.
+- [x] **C1 (P0):** Users can paste or load fictional approved policy text and submit it to the backend.
+- [x] **C2 (P0):** Extraction uses the OpenAI-compatible Responses API with strict structured JSON output.
 - [x] **C3 (P0):** Store source excerpts for extracted candidate rules.
 - [x] **C4 (P0):** Validate drafts and surface ambiguities for review.
-- [ ] **C5 (P0):** Persist pharmacist edits, confirmations, and rejections through the backend. Current review actions are browser-local.
-- [ ] **C6 (P0):** Enforce confirmation on backend feature calls as well as the current frontend gate.
-- [ ] **C7 (P1):** Add reopen/revision and simple version history for confirmed rules.
+- [x] **C5 (P0):** Editable fields plus draft, confirmed, and rejected review actions persist through the backend.
+- [x] **C6 (P0):** Backend rollout, simulator, ripple, and Shadow Mode services use confirmed rules only.
+- [x] **C7 (P1):** Confirmed rules can be reopened as drafts; review versions are persisted and visible in Policy Setup.
 
 ### Epic D — Rollout checker
 

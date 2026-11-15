@@ -63,4 +63,9 @@ export interface CandidateRule {
   expectedBehavior: string;
   sourceExcerpt: string;
   status: RuleStatus;
+  medicationId?: string | null;
+  departmentId?: string | null;
+  restriction?: string | null;
+  approvedAlternativeId?: string | null;
+  effectiveDate?: string | null;
 }

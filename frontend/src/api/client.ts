@@ -1,4 +1,4 @@
-import type { DemoDataset } from "../types";
+import type { DemoDataset, PolicyRule } from "../types";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
@@ -82,4 +82,28 @@ export async function extractPolicyDraft(policyText: string, policyId = "policy-
     throw new Error(detail ?? "Unable to create a policy draft.");
   }
   return body as PolicyDraftResponse;
+}
+
+export async function confirmPolicyRules(rules: PolicyRule[]): Promise<PolicyRule[]> {
+  const response = await fetch(`${API_URL}/api/policies/confirmed`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ rules }) });
+  if (!response.ok) throw new Error("Unable to save confirmed policy rules.");
+  return response.json() as Promise<PolicyRule[]>;
+}
+
+export type PolicyRuleReview = {
+  rule_id: string; policy_id: string; status: "Draft" | "Confirmed" | "Rejected"; title?: string | null;
+  medication_id: string | null; department_id: string | null; condition: string | null; restriction: string | null;
+  approved_alternative_id: string | null; effective_date: string | null; source_excerpt: string;
+};
+
+export async function savePolicyRuleReview(review: PolicyRuleReview): Promise<PolicyRuleReview> {
+  const response = await fetch(`${API_URL}/api/policies/rules/review`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(review) });
+  if (!response.ok) throw new Error("Unable to save policy rule review.");
+  return response.json() as Promise<PolicyRuleReview>;
+}
+
+export async function fetchPolicyHistory(): Promise<{ versions: Array<{ version: number; rules: PolicyRuleReview[] }> }> {
+  const response = await fetch(`${API_URL}/api/policies/history`);
+  if (!response.ok) throw new Error("Unable to load policy revision history.");
+  return response.json() as Promise<{ versions: Array<{ version: number; rules: PolicyRuleReview[] }> }>;
 }

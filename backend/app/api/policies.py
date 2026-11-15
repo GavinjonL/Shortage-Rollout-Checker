@@ -5,8 +5,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.ai.client import PolicyExtractionError, PolicyExtractor, get_policy_extractor
-from app.schemas.policy import ConfirmedPolicyRequest, PolicyDraft, PolicyExtractionRequest, PolicyRule
-from app.services.policy_store import get_confirmed_rules, replace_confirmed_rules
+from app.schemas.policy import ConfirmedPolicyRequest, PolicyDraft, PolicyExtractionRequest, PolicyRule, PolicyRuleReviewRequest
+from app.services.policy_store import get_confirmed_rules, get_rule_reviews, policy_history, replace_confirmed_rules, save_rule_review
 
 router = APIRouter(prefix="/api/policies", tags=["policies"])
 
@@ -40,3 +40,15 @@ def confirm_policy(request: ConfirmedPolicyRequest) -> list[PolicyRule]:
 @router.get("/confirmed", response_model=list[PolicyRule])
 def confirmed_policy() -> list[PolicyRule]:
     return get_confirmed_rules()
+
+@router.get("/history")
+def confirmed_policy_history() -> dict:
+    return {"versions": policy_history()}
+
+@router.post("/rules/review")
+def save_review(request: PolicyRuleReviewRequest) -> dict:
+    return save_rule_review(request.model_dump())
+
+@router.get("/rules/review")
+def reviewed_rules() -> dict:
+    return {"rules": get_rule_reviews()}
