@@ -165,12 +165,24 @@ class OpenAICompatiblePolicyExtractor:
 
 
 class MockPolicyExtractor:
-    """Offline, intentionally conservative mode for demos without an API key."""
+    """Offline, deterministic draft generator for fictional demo walkthroughs."""
     def extract(self, policy_text: str, policy_id: str) -> PolicyDraft:
+        sentences = [part.strip() for part in re.split(r"(?<=[.!?])\s+", policy_text) if part.strip()]
+        source_excerpt = next((sentence for sentence in sentences if "restrict" in sentence.casefold()), sentences[0] if sentences else policy_text)
+        alternative = next((match.group(0).upper() for match in re.finditer(r"\bMED-[A-Z0-9-]+\b", policy_text, re.IGNORECASE) if match.group(0).casefold() != "med-a"), None)
         return PolicyDraft(
             policy_id=policy_id,
-            rules=[],
-            ambiguities=["Mock mode does not interpret policies. Configure Groq or OpenAI to create a draft."],
+            rules=[DraftPolicyRule(
+                medication_id="med-a-iv",
+                department_id="dept-emergency",
+                condition="The fictional shortage flag is active and an eligible adult order is supplied.",
+                restriction="Restrict the fictional shortage medication according to the supplied demo policy.",
+                approved_alternative_id=alternative or "med-b-oral",
+                effective_date="2026-11-15",
+                source_excerpt=source_excerpt,
+                confirmed_by_user=False,
+            )],
+            ambiguities=["Mock AI draft — review and confirm this fictional rule before using it."],
         )
 
 

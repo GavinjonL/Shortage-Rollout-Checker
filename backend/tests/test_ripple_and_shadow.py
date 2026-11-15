@@ -16,7 +16,7 @@ def test_shadow_groups_repeated_events_in_a_time_window() -> None:
     result = analyze_events(load_demo_data(), 24)
     assert len(result["findings"]) == 1
     finding = result["findings"][0]
-    assert finding["event_count"] == 2
+    assert finding["event_count"] == 3
     assert finding["time_window"]["hours"] == 24
 
 

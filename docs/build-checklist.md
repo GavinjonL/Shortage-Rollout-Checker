@@ -31,7 +31,7 @@ This checklist tracks the current Builder Plan against the repository as of Nove
 - [ ] **B3 (P0):** Add a safe backend AI connectivity-check endpoint.
 - [x] **B4 (P0):** Keep API keys server-side; no frontend key usage is present.
 - [x] **B5 (P0):** Return readable errors for missing keys, auth, rate limits, timeouts, network, model, and malformed-output failures.
-- [ ] **B6 (P0):** Make mock-AI mode complete the full policy-intake demo. Current mock mode intentionally returns no rules.
+- [x] **B6 (P0):** Mock-AI mode returns a labeled, reviewable fictional draft so the policy-intake demo can complete offline.
 - [ ] **B7 (P1):** Add a privacy-safe model-call status log.
 - [ ] **B8 (P0):** Define strict schemas for the read-only AI function tools.
 - [ ] **B9 (P0):** Implement the allowlisted, validated backend tool dispatcher.
@@ -94,12 +94,12 @@ This checklist tracks the current Builder Plan against the repository as of Nove
 
 ### Epic I — Integration, validation, and presentation
 
-- [ ] **I1 (P0):** Connect all feature pages to the same confirmed policy and shared demo dataset.
+- [x] **I1 (P0):** Connect Policy Setup, Rollout Review, Flight Simulator, Ripple Map, and Shadow Mode through the same confirmed policy and shared fictional demo dataset.
 - [x] **I2 (P0):** Maintain a concise demo script.
-- [ ] **I3 (P0):** Perform and record a clean-reset walkthrough of every scripted button.
+- [x] **I3 (P0):** Clean-reset mock-mode browser walkthrough passed and is recorded in `docs/clean-reset-walkthrough.md`.
 - [x] **I4 (P0):** Keep the committed demo fictional and free of production write actions.
-- [ ] **I5 (P0):** Rehearse and visibly distinguish full live-AI and full mock-AI modes.
-- [ ] **I6 (P1):** Obtain pharmacist or pharmacy-informatics wording/boundary review.
+- [x] **I5 (P0):** Policy Setup visibly labels live versus mock AI mode; both rehearsals passed and are recorded in `docs/clean-reset-walkthrough.md`.
+- [x] **I6 (P1):** Pharmacist review approved the fictional, review-only wording and safety boundaries; the record is in `docs/pharmacist-review-packet.md`.
 
 ### Epic J — Future work
 

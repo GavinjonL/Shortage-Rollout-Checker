@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { rolloutFindings, systemConfigRecords } from "../data/demoData";
 import type { RolloutFinding } from "../types";
 import { StatusBadge } from "../components/StatusBadge";
@@ -13,7 +13,7 @@ const initialStatus = "All statuses";
 
 export function RolloutReviewPage() {
   const { recordActivity } = useActivity();
-  const { rolloutFindings: findings, updateFindingStatus, isPolicyConfirmed } = useDemo();
+  const { rolloutFindings: findings, updateFindingStatus, isPolicyConfirmed, refreshRolloutFindings } = useDemo();
   const [department, setDepartment] = useState(initialDepartment);
   const [system, setSystem] = useState(initialSystem);
   const [status, setStatus] = useState(initialStatus);
@@ -31,6 +31,10 @@ export function RolloutReviewPage() {
   const needsReviewCount = findings.filter((finding) => finding.review_status === "Needs review").length;
   const reviewedCount = findings.filter((finding) => finding.review_status !== "Needs review").length;
   const hasFilters = department !== initialDepartment || system !== initialSystem || status !== initialStatus;
+
+  useEffect(() => {
+    if (isPolicyConfirmed) void refreshRolloutFindings();
+  }, [isPolicyConfirmed, refreshRolloutFindings]);
 
   if (!isPolicyConfirmed) return <PolicyConfirmationGate feature="Rollout Review" />;
 
