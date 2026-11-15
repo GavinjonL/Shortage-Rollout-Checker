@@ -1,6 +1,6 @@
 import type { ActivityEntry, DemoPolicy, Finding, RippleInventoryRecord, RolloutFinding, SystemConfigRecord } from "../types";
 
-export const activeDemoPolicy: DemoPolicy = { name: "Orion shortage response", status: "Confirmed", effectiveDate: "November 18, 2026", confirmedRules: 3 };
+export const activeDemoPolicy: DemoPolicy = { name: "MED-A shortage response", status: "Confirmed", effectiveDate: "November 15, 2026", confirmedRules: 3 };
 
 export const demoFindings: Finding[] = [
   { id: "F-104", feature: "Rollout Review", severity: "High", summary: "Infusion Center instruction may still permit unrestricted Orion use.", evidence_ids: ["POL-01", "EHR-204"], assumptions: ["Fictional EHR configuration", "Confirmed policy rule POL-01"], review_status: "Needs review", created_at: "2026-11-14T09:30:00Z" },
@@ -21,10 +21,10 @@ export const rolloutFindings: RolloutFinding[] = [
 ];
 
 export const systemConfigRecords: SystemConfigRecord[] = [
-  { id: "EHR-204", department: "Infusion Center", systemType: "EHR order set", medication: "Orion", instructionText: "Available for standard use.", state: "Possible mismatch" },
-  { id: "PUMP-184", department: "Emergency Department", systemType: "Smart-pump library", medication: "Orion", instructionText: "New limit effective November 25.", state: "Possible mismatch" },
-  { id: "ADC-082", department: "Infusion Center", systemType: "Dispensing cabinet", medication: "Orion", instructionText: "Restricted per shortage policy.", state: "Aligned" },
-  { id: "BUY-031", department: "Central Pharmacy", systemType: "Purchasing record", medication: "Aurora", instructionText: "Approved alternative link recorded.", state: "Aligned" },
+  { id: "EHR-204", department: "General Ward", systemType: "EHR order set", medication: "MED-A", instructionText: "Available for routine use.", state: "Possible mismatch" },
+  { id: "PUMP-184", department: "General Ward", systemType: "Smart-pump library", medication: "MED-A", instructionText: "New limit effective November 25.", state: "Possible mismatch" },
+  { id: "ADC-082", department: "General Ward", systemType: "Dispensing cabinet", medication: "MED-A", instructionText: "Restricted per shortage policy.", state: "Aligned" },
+  { id: "BUY-031", department: "Central Pharmacy", systemType: "Purchasing record", medication: "MED-B", instructionText: "Approved alternative link recorded.", state: "Aligned" },
 ];
 
 export const rippleInventory: RippleInventoryRecord[] = [
