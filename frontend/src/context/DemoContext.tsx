@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { activityEntries, demoFindings, rolloutFindings } from "../data/demoData";
-import { fetchDemoData } from "../api/client";
+import { fetchDemoData, resetDemoData } from "../api/client";
 import type { ActivityEntry, CandidateRule, Finding, RolloutFinding } from "../types";
 
 const demoPolicyText = `Fictional shortage policy — MED-A IV
@@ -18,7 +18,7 @@ type DemoContextValue = {
   policyText: string; rules: CandidateRule[]; findings: Finding[]; rolloutFindings: RolloutFinding[]; activities: ActivityEntry[];
   confirmedRuleCount: number; isPolicyConfirmed: boolean;
   loadDemoPolicy: () => void; loadDemoData: () => Promise<void>; createCandidateRules: () => void; setCandidateRules: (rules: CandidateRule[]) => void; updateRule: (id: string, updates: Partial<CandidateRule>) => void;
-  updateFindingStatus: (id: string, status: string) => void; recordActivity: (activity: NewActivity) => void; resetDemo: () => void;
+  updateFindingStatus: (id: string, status: string) => void; recordActivity: (activity: NewActivity) => void; resetDemo: () => Promise<void>;
 };
 
 const DemoContext = createContext<DemoContextValue | undefined>(undefined);
@@ -45,7 +45,10 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     setSharedRolloutFindings(rolloutFindings);
     setActivities([{ id: "ACT-DEMO-LOAD", timestamp: "Just now", actor: "Demo user", feature: "Foundation", action: "Loaded demo data", target: dataset.policy.id, detail: `${dataset.medications.length} fictional medications and ${dataset.departments.length} departments loaded.` }, ...activityEntries]);
   }, []);
-  const resetDemo = useCallback(() => { setPolicyText(""); setRules([]); setFindings(demoFindings); setSharedRolloutFindings(rolloutFindings); setActivities(activityEntries); }, []);
+  const resetDemo = useCallback(async () => {
+    await resetDemoData();
+    setPolicyText(""); setRules([]); setFindings(demoFindings); setSharedRolloutFindings(rolloutFindings); setActivities(activityEntries);
+  }, []);
   const value = useMemo(() => ({
     policyText, rules, findings, rolloutFindings: sharedRolloutFindings, activities, confirmedRuleCount, isPolicyConfirmed,
     loadDemoPolicy: () => { setPolicyText(demoPolicyText); setRules([]); }, loadDemoData, createCandidateRules: () => setRules(candidateRuleDraft), setCandidateRules: setRules,

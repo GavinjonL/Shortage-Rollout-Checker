@@ -8,7 +8,7 @@ from app.schemas.policy import PolicyRule
 from app.schemas.scenario import TestCase
 
 
-class DemoPolicy(BaseModel):
+class ShortagePolicy(BaseModel):
     model_config = ConfigDict(extra="forbid")
     id: str
     name: str
@@ -19,7 +19,7 @@ class DemoDataset(BaseModel):
     """All data is fictional and suitable only for the browser demo."""
 
     model_config = ConfigDict(extra="forbid")
-    policy: DemoPolicy
+    policy: ShortagePolicy
     medications: list[Medication]
     departments: list[Department]
     configurations: list[SystemConfig]
