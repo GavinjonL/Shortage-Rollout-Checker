@@ -38,10 +38,8 @@ class AISettings:
 
     @classmethod
     def from_environment(cls) -> "AISettings":
-        # The backend-local file is the source of truth for local development.
-        # Override inherited shell values so changing backend/.env takes effect
-        # after a normal server restart.
-        load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", ".env"), override=True)
+        # Load local defaults but allow explicit process configuration to win.
+        load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
         provider = os.getenv("AI_PROVIDER", "groq").strip().lower()
         if provider == "groq":
             return cls(provider, os.getenv("GROQ_API_KEY"), os.getenv("GROQ_MODEL", "openai/gpt-oss-120b"), GROQ_BASE_URL)
