@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException
 from app.data.seed_demo import load_demo_data
 from app.schemas.scenario import SimulationCaseDetail, SimulationRequest, SimulationResult, TestCase
 from app.services.flight_simulator import evaluate_test_case, run_sample_cases
+from app.services.generated_cases import list_generated_cases
 from app.services.policy_store import get_confirmed_rules
 
 router = APIRouter(prefix="/api/simulator", tags=["simulator"])
@@ -14,7 +15,8 @@ router = APIRouter(prefix="/api/simulator", tags=["simulator"])
 def list_cases() -> list[SimulationCaseDetail]:
     dataset = load_demo_data()
     configurations = {configuration.id: configuration for configuration in dataset.configurations}
-    return [SimulationCaseDetail(test_case=test_case, configuration=configurations.get(test_case.configuration_id)) for test_case in dataset.test_cases]
+    cases = [*dataset.test_cases, *list_generated_cases()]
+    return [SimulationCaseDetail(test_case=test_case, configuration=configurations.get(test_case.configuration_id)) for test_case in cases]
 
 
 @router.get("/confirmed-cases")
@@ -32,7 +34,7 @@ def validate_case(test_case: TestCase) -> TestCase:
 @router.post("/cases/{case_id}/run", response_model=SimulationResult)
 def run_case(case_id: str, request: SimulationRequest) -> SimulationResult:
     dataset = load_demo_data()
-    test_case = next((item for item in dataset.test_cases if item.id == case_id), None)
+    test_case = next((item for item in [*dataset.test_cases, *list_generated_cases()] if item.id == case_id), None)
     if test_case is None:
         raise HTTPException(status_code=404, detail="Fictional sample case not found.")
     rule = next((item for item in dataset.policy.rules if item.id == test_case.source_rule_id), None)

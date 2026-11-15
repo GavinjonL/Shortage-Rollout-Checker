@@ -31,6 +31,13 @@ export async function runSimulationCase(caseId: string, instructionText: string 
   return body as SimulationResult;
 }
 
+export type RippleProjection = { projected_daily_use: number; days_above_reserve: number; source_medication_id: string; alternative_medication_id: string; location_id: string; shift_percent: number; formula: string; assumptions: string[] };
+export async function fetchRippleProjection(shift: number, comparison: number) { const response = await fetch(`${API_URL}/api/ripple/projection?shift_percent=${shift}&comparison_shift_percent=${comparison}`); if (!response.ok) throw new Error("Unable to load ripple projection."); return response.json() as Promise<{ primary: { projection: RippleProjection | null; reason: string | null }; comparison: { projection: RippleProjection | null; reason: string | null } | null }>; }
+export type ShadowFinding = { id: string; summary: string; reason: string; evidence_ids: string[]; source_excerpt: string; event_count: number; review_status: string; time_window: { start: string; end: string; hours: number } };
+export async function fetchShadowFindings() { const response = await fetch(`${API_URL}/api/shadow/findings`); if (!response.ok) throw new Error("Unable to load Shadow Mode findings."); return response.json() as Promise<{ findings: ShadowFinding[] }>; }
+export async function saveShadowReview(id: string, status: string, note: string) { const response = await fetch(`${API_URL}/api/shadow/findings/${id}/review`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status, note }) }); if (!response.ok) throw new Error("Unable to save Shadow Mode review."); }
+export async function createShadowFollowUp(id: string) { const response = await fetch(`${API_URL}/api/shadow/findings/${id}/create-test-case`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ confirmed: true }) }); if (!response.ok) throw new Error("Unable to create follow-up case."); }
+
 export async function resetDemoData(): Promise<DemoDataset> {
   const response = await fetch(`${API_URL}/api/demo/reset`, { method: "POST" });
   if (!response.ok) throw new Error("Unable to reset the fictional demo data.");
