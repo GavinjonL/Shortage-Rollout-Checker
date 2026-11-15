@@ -22,12 +22,12 @@ VALID_RULE = {
 
 class FakeCompletion:
     def __init__(self, payload):
-        self.choices = [type("Choice", (), {"message": type("Message", (), {"content": json.dumps(payload)})()})()]
+        self.output_text = json.dumps(payload)
 
 
 class FakeClient:
     def __init__(self, response=None, error=None):
-        self.chat = type("Chat", (), {"completions": self})()
+        self.responses = self
         self.response, self.error = response, error
 
     def create(self, **kwargs):

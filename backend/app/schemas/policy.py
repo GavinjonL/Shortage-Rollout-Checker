@@ -53,3 +53,19 @@ class PolicyDraft(BaseModel):
 class ConfirmedPolicyRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     rules: list[PolicyRule] = Field(min_length=1)
+
+
+class PolicyRuleReviewRequest(BaseModel):
+    """Persist a pharmacist's draft, confirmed, or rejected rule review."""
+    model_config = ConfigDict(extra="forbid")
+    rule_id: str
+    policy_id: str
+    status: Literal["Draft", "Confirmed", "Rejected"]
+    title: str | None = None
+    medication_id: str | None = None
+    department_id: str | None = None
+    condition: str | None = None
+    restriction: str | None = None
+    approved_alternative_id: str | None = None
+    effective_date: str | None = None
+    source_excerpt: str = Field(min_length=1)

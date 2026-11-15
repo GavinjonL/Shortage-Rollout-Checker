@@ -31,6 +31,13 @@ export async function runSimulationCase(caseId: string, instructionText: string 
   return body as SimulationResult;
 }
 
+export type RippleProjection = { projected_daily_use: number; days_above_reserve: number; source_medication_id: string; alternative_medication_id: string; location_id: string; shift_percent: number; formula: string; assumptions: string[] };
+export async function fetchRippleProjection(shift: number, comparison: number) { const response = await fetch(`${API_URL}/api/ripple/projection?shift_percent=${shift}&comparison_shift_percent=${comparison}`); if (!response.ok) throw new Error("Unable to load ripple projection."); return response.json() as Promise<{ primary: { projection: RippleProjection | null; reason: string | null }; comparison: { projection: RippleProjection | null; reason: string | null } | null }>; }
+export type ShadowFinding = { id: string; summary: string; reason: string; evidence_ids: string[]; source_excerpt: string; event_count: number; review_status: string; time_window: { start: string; end: string; hours: number } };
+export async function fetchShadowFindings() { const response = await fetch(`${API_URL}/api/shadow/findings`); if (!response.ok) throw new Error("Unable to load Shadow Mode findings."); return response.json() as Promise<{ findings: ShadowFinding[] }>; }
+export async function saveShadowReview(id: string, status: string, note: string) { const response = await fetch(`${API_URL}/api/shadow/findings/${id}/review`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status, note }) }); if (!response.ok) throw new Error("Unable to save Shadow Mode review."); }
+export async function createShadowFollowUp(id: string) { const response = await fetch(`${API_URL}/api/shadow/findings/${id}/create-test-case`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ confirmed: true }) }); if (!response.ok) throw new Error("Unable to create follow-up case."); }
+
 export async function resetDemoData(): Promise<DemoDataset> {
   const response = await fetch(`${API_URL}/api/demo/reset`, { method: "POST" });
   if (!response.ok) throw new Error("Unable to reset the fictional demo data.");
@@ -85,47 +92,25 @@ export async function extractPolicyDraft(policyText: string, policyId = "policy-
 }
 
 export async function confirmPolicyRules(rules: PolicyRule[]): Promise<PolicyRule[]> {
-  const response = await fetch(`${API_URL}/api/policies/confirmed`, {
-    method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ rules }),
-  });
-  if (!response.ok) throw new Error("Unable to save the confirmed fictional policy.");
+  const response = await fetch(`${API_URL}/api/policies/confirmed`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ rules }) });
+  if (!response.ok) throw new Error("Unable to save confirmed policy rules.");
   return response.json() as Promise<PolicyRule[]>;
 }
 
-export type AiModeStatus = { ok: boolean; provider: string; mode?: string; model?: string };
-export async function fetchAiMode(): Promise<AiModeStatus> {
-  const response = await fetch(`${API_URL}/api/ai/check`, { method: "POST" });
-  const body = await response.json().catch(() => null) as AiModeStatus | { detail?: string } | null;
-  if (!response.ok) throw new Error(body && "detail" in body ? body.detail ?? "AI mode unavailable." : "AI mode unavailable.");
-  return body as AiModeStatus;
+export type PolicyRuleReview = {
+  rule_id: string; policy_id: string; status: "Draft" | "Confirmed" | "Rejected"; title?: string | null;
+  medication_id: string | null; department_id: string | null; condition: string | null; restriction: string | null;
+  approved_alternative_id: string | null; effective_date: string | null; source_excerpt: string;
+};
+
+export async function savePolicyRuleReview(review: PolicyRuleReview): Promise<PolicyRuleReview> {
+  const response = await fetch(`${API_URL}/api/policies/rules/review`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(review) });
+  if (!response.ok) throw new Error("Unable to save policy rule review.");
+  return response.json() as Promise<PolicyRuleReview>;
 }
 
-export type RolloutApiFinding = { id: string; severity: string; summary: string; evidence_ids: string[]; assumptions: string[]; review_status: string; created_at: string; policy_rule_id: string; source_record_id: string; department_id: string; system_type: string; instruction_text: string };
-export async function fetchRolloutFindings(): Promise<RolloutApiFinding[]> {
-  const response = await fetch(`${API_URL}/api/rollout/findings`);
-  if (!response.ok) throw new Error("Unable to compare the fictional rollout records.");
-  const body = await response.json() as { findings: RolloutApiFinding[] };
-  return body.findings;
-}
-
-export type RippleProjection = { policy_rule_id: string; source_medication_id: string; alternative_medication_id: string; location_id: string; shift_percent: number; baseline_daily_use: number; projected_daily_use: number; quantity_on_hand: number; minimum_reserve: number; usable_supply: number; days_above_reserve: number; formula: string; assumptions: string[] };
-export async function fetchRippleProjection(shiftPercent: number): Promise<RippleProjection> {
-  const response = await fetch(`${API_URL}/api/ripple/projection?shift_percent=${shiftPercent}`);
-  if (!response.ok) throw new Error("Unable to calculate the fictional ripple projection.");
-  const body = await response.json() as { primary: { projection: RippleProjection | null; reason: string | null } };
-  if (!body.primary.projection) throw new Error(body.primary.reason ?? "No approved alternative projection is available.");
-  return body.primary.projection;
-}
-
-export type ShadowApiFinding = { id: string; review_status: string; summary: string; policy_rule_id: string; department_id: string; event_type: string; event_count: number; evidence_ids: string[]; source_excerpt: string; time_window: { start: string; end: string; hours: number }; reason: string; assumptions: string[] };
-export type ShadowApiEvent = { id: string; timestamp: string; department_id: string; medication_id: string; event_type: string; result: string; source_record_id: string };
-export async function fetchShadowAnalysis(): Promise<{ events: ShadowApiEvent[]; findings: ShadowApiFinding[] }> {
-  const response = await fetch(`${API_URL}/api/shadow/findings?window_hours=24`);
-  if (!response.ok) throw new Error("Unable to analyze the fictional shadow events.");
-  return response.json() as Promise<{ events: ShadowApiEvent[]; findings: ShadowApiFinding[] }>;
-}
-
-export async function reviewShadowFinding(id: string, status: string, note: string): Promise<void> {
-  const response = await fetch(`${API_URL}/api/shadow/findings/${id}/review`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status, note }) });
-  if (!response.ok) throw new Error("Unable to save the fictional Shadow Mode review.");
+export async function fetchPolicyHistory(): Promise<{ versions: Array<{ version: number; rules: PolicyRuleReview[] }> }> {
+  const response = await fetch(`${API_URL}/api/policies/history`);
+  if (!response.ok) throw new Error("Unable to load policy revision history.");
+  return response.json() as Promise<{ versions: Array<{ version: number; rules: PolicyRuleReview[] }> }>;
 }

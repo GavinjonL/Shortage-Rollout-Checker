@@ -10,6 +10,7 @@ from app.api.ripple import router as ripple_router
 from app.api.shadow import router as shadow_router
 from app.api.ai import check_ai, router as ai_router
 from app.api.demo import router as demo_router
+from app.ai.client import AISettings
 
 app = FastAPI(title="Shortage Rollout Checker", version="0.1.0")
 allowed_origins = [origin.strip() for origin in os.getenv(
@@ -31,6 +32,13 @@ app.include_router(ai_router)
 app.include_router(demo_router)
 # Direct registration keeps this backend-only diagnostic visible in local Swagger.
 app.post("/api/ai/check", tags=["ai"])(check_ai)
+
+@app.on_event("startup")
+def validate_live_ai_configuration() -> None:
+    settings = AISettings.from_environment()
+    if settings.provider != "mock" and not settings.api_key:
+        key_name = "GROQ_API_KEY" if settings.provider == "groq" else "OPENAI_API_KEY"
+        raise RuntimeError(f"Live AI mode requires {key_name}. Configure the local root .env or set AI_PROVIDER=mock.")
 
 @app.get("/health")
 def health() -> dict[str, str]:

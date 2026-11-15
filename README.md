@@ -12,7 +12,7 @@ Create an account at [Groq Console](https://console.groq.com), then create an AP
 
 ### 2. Configure your local environment
 
-At the repository root, copy `.env.example` to a new file named `.env`. The new `.env` is ignored by Git.
+Inside `backend/`, copy `.env.example` to a new file named `.env`. The new `backend/.env` is ignored by Git.
 
 ```env
 AI_PROVIDER=groq
