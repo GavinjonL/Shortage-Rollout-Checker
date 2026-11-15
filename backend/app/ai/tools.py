@@ -6,6 +6,7 @@ from app.services.flight_simulator import run_sample_cases
 from app.services.policy_store import get_confirmed_rules
 from app.services.ripple_engine import build_projection
 from app.services.shadow_analyzer import analyze_events
+from app.data.seed_demo import load_demo_data
 
 _FIXTURES = Path(__file__).parent.parent / "data" / "fixtures"
 READ_ONLY_TOOLS = (
@@ -39,5 +40,5 @@ def dispatch_read_only_tool(name: str, arguments: dict) -> dict:
     if name == "get_sample_orders": return {"test_cases": _fixture("test_cases.json")}
     if name == "run_policy_simulation": return {"cases": run_sample_cases(rules)}
     if name == "get_inventory_snapshot": return {"inventory": _fixture("inventory.json")}
-    if name == "build_ripple_projection": return build_projection(rules)
-    return analyze_events(rules)
+    if name == "build_ripple_projection": return build_projection(load_demo_data())
+    return analyze_events(load_demo_data())
