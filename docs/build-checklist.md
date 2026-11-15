@@ -94,12 +94,12 @@ This checklist tracks the current Builder Plan against the repository as of Nove
 
 ### Epic I — Integration, validation, and presentation
 
-- [ ] **I1 (P0):** Connect all feature pages to the same confirmed policy and shared demo dataset.
+- [x] **I1 (P0):** Connect all feature pages to the same confirmed policy and shared fictional demo dataset.
 - [x] **I2 (P0):** Maintain a concise demo script.
-- [ ] **I3 (P0):** Perform and record a clean-reset walkthrough of every scripted button.
+- [x] **I3 (P0):** Clean-reset mock-mode browser walkthrough passed and is recorded in `docs/clean-reset-walkthrough.md`.
 - [x] **I4 (P0):** Keep the committed demo fictional and free of production write actions.
-- [ ] **I5 (P0):** Rehearse and visibly distinguish full live-AI and full mock-AI modes.
-- [ ] **I6 (P1):** Obtain pharmacist or pharmacy-informatics wording/boundary review.
+- [x] **I5 (P0):** Mock and live Groq rehearsals passed with visible mode labels; results are recorded in `docs/clean-reset-walkthrough.md`.
+- [x] **I6 (P1):** Pharmacist review approved the fictional, review-only wording and safety boundaries; the record is in `docs/pharmacist-review-packet.md`.
 
 ### Epic J — Future work
 
