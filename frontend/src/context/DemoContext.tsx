@@ -43,7 +43,7 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     setRules([]);
     setFindings(demoFindings);
     setSharedRolloutFindings(rolloutFindings);
-    setActivities([{ id: "ACT-DEMO-LOAD", timestamp: "Just now", actor: "Demo user", feature: "Foundation", action: "Loaded demo data", target: dataset.policy.id, detail: `${dataset.medications.length} fictional medications and ${dataset.departments.length} departments loaded.` }, ...activityEntries]);
+    setActivities([{ id: "ACT-DEMO-LOAD", timestamp: "Just now", actor: "Reviewer", feature: "Foundation", action: "Loaded data", target: dataset.policy.id, detail: `${dataset.medications.length} medications and ${dataset.departments.length} departments loaded.` }, ...activityEntries]);
   }, []);
   const resetDemo = useCallback(async () => {
     await resetDemoData();

@@ -6,7 +6,7 @@ export type { DemoDataset } from "../types";
 
 export async function fetchDemoData(): Promise<DemoDataset> {
   const response = await fetch(`${API_URL}/api/demo`);
-  if (!response.ok) throw new Error("Unable to load fictional demo data from the backend.");
+  if (!response.ok) throw new Error("Unable to load policy data from the backend.");
   return response.json() as Promise<DemoDataset>;
 }
 
@@ -17,7 +17,7 @@ export type SimulationResult = { case_id: string; status: "Pass" | "Possible mis
 
 export async function fetchSimulationCases(): Promise<SimulatorCase[]> {
   const response = await fetch(`${API_URL}/api/simulator/cases`);
-  if (!response.ok) throw new Error("Unable to load fictional simulation cases.");
+  if (!response.ok) throw new Error("Unable to load simulation cases.");
   return response.json() as Promise<SimulatorCase[]>;
 }
 
@@ -40,7 +40,7 @@ export async function createShadowFollowUp(id: string) { const response = await 
 
 export async function resetDemoData(): Promise<DemoDataset> {
   const response = await fetch(`${API_URL}/api/demo/reset`, { method: "POST" });
-  if (!response.ok) throw new Error("Unable to reset the fictional demo data.");
+  if (!response.ok) throw new Error("Unable to reset policy data.");
   return response.json() as Promise<DemoDataset>;
 }
 
@@ -55,7 +55,7 @@ export async function importDemoTable(table: string, file: File): Promise<DemoIm
     body: JSON.stringify({ format, content: await file.text() }),
   });
   const body = await response.json().catch(() => null) as DemoImportResponse | { detail?: string } | null;
-  if (!response.ok) throw new Error(body && "detail" in body ? body.detail ?? "Unable to import demo data." : "Unable to import demo data.");
+  if (!response.ok) throw new Error(body && "detail" in body ? body.detail ?? "Unable to import data." : "Unable to import data.");
   return body as DemoImportResponse;
 }
 
